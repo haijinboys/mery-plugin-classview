@@ -14,12 +14,12 @@ uses
 {$IF CompilerVersion > 22.9}
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.Menus, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ExtCtrls, Winapi.CommCtrl,
+  Vcl.Menus, Vcl.ImgList, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ExtCtrls;
 {$ELSE}
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Menus, StdCtrls, ComCtrls, ExtCtrls, CommCtrl,
+  Dialogs, Menus, ImgList, StdCtrls, ComCtrls, ExtCtrls;
 {$IFEND}
-  Native, StringBuffer, ImgList;
+
 
 const
   MaxLineLength = 2000;
@@ -123,7 +123,6 @@ type
     FFontSizeSub: NativeInt;
     FParam: string;
     FAutoRefresh: Boolean;
-    FStringBuffer: TStringBuffer;
     FList: TClassViewList;
     FUpdateClassView: Boolean;
     FWorkFlag: NativeInt;
@@ -131,7 +130,7 @@ type
     FAbortThread: Boolean;
     FQueEvent: THandle;
     FMutex: THandle;
-    FPoint: TNativePoint;
+    FPoint: TPoint;
     procedure ReadIni;
     procedure WriteIni;
     procedure UpdateTreeViewAll;
@@ -319,7 +318,6 @@ begin
   FFontSizeSub := 0;
   FParam := '';
   FAutoRefresh := True;
-  FStringBuffer := TStringBuffer.Create(0);
   FList := TClassViewList.Create;
   FUpdateClassView := False;
   FWorkFlag := 0;
@@ -350,8 +348,6 @@ begin
     FMutex := 0;
   end;
   WriteIni;
-  if Assigned(FStringBuffer) then
-    FreeAndNil(FStringBuffer);
   if Assigned(FList) then
     FreeAndNil(FList);
 end;
