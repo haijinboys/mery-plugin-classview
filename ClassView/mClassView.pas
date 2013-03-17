@@ -20,7 +20,7 @@ uses
 
 resourcestring
   SName = 'ClassView';
-  SVersion = '1.0.2';
+  SVersion = '1.0.3';
 
 type
   TClassViewFrame = class(TFrame)
@@ -71,9 +71,12 @@ begin
     Result := FForm.SetProperties
   else
   begin
-    with TMainForm.Create(nil) do
+    with TMainForm.CreateParented(Handle) do
       try
+        BarPos := FBarPos;
         Result := SetProperties;
+        if Result then
+          FBarPos := BarPos;
       finally
         Free;
       end;
@@ -137,7 +140,6 @@ begin
       Top := 0;
       Visible := True;
       BarPos := FBarPos;
-
     end;
     with Info do
     begin
