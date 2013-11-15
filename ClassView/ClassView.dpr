@@ -17,10 +17,12 @@ uses
   Winapi.Windows,
   System.SysUtils,
   System.Classes,
+  Vcl.Themes,
 {$ELSE}
   Windows,
   SysUtils,
   Classes,
+  Themes,
 {$IFEND}
   mCommon in 'mCommon.pas',
   mMain in 'mMain.pas' {MainForm},
@@ -45,7 +47,8 @@ var
   Frame: TFrame;
 begin
   Frame := FList.Find(hwnd);
-  Frame.OnCommand(hwnd);
+  if Frame <> nil then
+    Frame.OnCommand(hwnd);
 end;
 
 function QueryStatus(hwnd: HWND; pbChecked: PBOOL): BOOL; stdcall;
@@ -112,6 +115,7 @@ begin
         for I := FList.Count - 1 downto 0 do
           FList[I].Free;
         FList.Free;
+        ThemeServices.Free;
       end
       else
       begin
@@ -165,5 +169,6 @@ exports
   PluginProc;
 
 begin
+  // ReportMemoryLeaksOnShutdown := True;
 
 end.

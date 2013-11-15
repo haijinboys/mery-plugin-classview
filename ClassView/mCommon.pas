@@ -1,15 +1,12 @@
 unit mCommon;
 
-{$WARN SYMBOL_PLATFORM OFF}
-
-
 interface
 
 uses
 {$IF CompilerVersion > 22.9}
-  Winapi.Windows, System.SysUtils;
+  Winapi.Windows, System.SysUtils, Vcl.Graphics;
 {$ELSE}
-  Windows, SysUtils;
+  Windows, SysUtils, Graphics;
 {$IFEND}
 
 
@@ -21,6 +18,7 @@ function FileExists2(const FileName: string): Boolean;
 function DirectoryExists2(const Directory: string): Boolean;
 function GetAppDataPath: string;
 function GetIniFileName(var FileName: string): Boolean;
+function GetInvertColor(Color: TColor): TColor;
 
 function ShellExecute(hWnd: HWND; Operation, FileName, Parameters,
   Directory: PWideChar; ShowCmd: Integer): HINST; stdcall;
@@ -109,7 +107,7 @@ var
 begin
   SetLastError(ERROR_SUCCESS);
   if SHGetFolderPath(0, CSIDL_APPDATA, 0, 0, @S) = S_OK then
-    Result := IncludeTrailingBackslash(S);
+    Result := IncludeTrailingPathDelimiter(S);
 end;
 
 // -----------------------------------------------------------------------------
@@ -128,6 +126,16 @@ begin
   end;
   if FileName <> '' then
     Result := True;
+end;
+
+// -----------------------------------------------------------------------------
+// îΩì]êFéÊìæ
+
+function GetInvertColor(Color: TColor): TColor;
+begin
+  if Color < 0 then
+    Color := GetSysColor(Color and $FF);
+  Result := Color xor $FFFFFF;
 end;
 
 end.

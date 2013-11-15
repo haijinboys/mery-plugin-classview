@@ -575,9 +575,17 @@ procedure TMainForm.ClassViewAll;
   begin
     Result := '';
     SetLastError(ERROR_SUCCESS);
+{$IF CompilerVersion > 22.9}
+    I := Winapi.Windows.GetTempPath(0, nil);
+{$ELSE}
     I := Windows.GetTempPath(0, nil);
+{$IFEND}
     SetLength(Result, I - 1);
+{$IF CompilerVersion > 22.9}
+    if Winapi.Windows.GetTempPath(I, PWideChar(Result)) <> 0 then
+{$ELSE}
     if Windows.GetTempPath(I, PWideChar(Result)) <> 0 then
+{$IFEND}
     begin
       I := GetLongPathName(PChar(Result), nil, 0);
       SetLength(Result, I - 1);
@@ -593,7 +601,11 @@ procedure TMainForm.ClassViewAll;
     S := GetTempPath;
     SetLength(Result, MAX_PATH);
     SetLastError(ERROR_SUCCESS);
+{$IF CompilerVersion > 22.9}
+    E := Winapi.Windows.GetTempFileName(PChar(S), PChar(Prefix), 0, PChar(Result));
+{$ELSE}
     E := Windows.GetTempFileName(PChar(S), PChar(Prefix), 0, PChar(Result));
+{$IFEND}
     if E = 0 then
       raise EInOutError.Create(SysErrorMessage(GetLastError));
     SetLength(Result, StrLen(PChar(Result)));
@@ -844,6 +856,11 @@ begin
   ASize := Editor_Info(FEditor, MI_GET_FONT_SIZE, 0);
   AFore := TColor(Editor_Info(FEditor, MI_GET_TEXT_COLOR, COLOR_GENERAL));
   ABack := TColor(Editor_Info(FEditor, MI_GET_BACK_COLOR, COLOR_GENERAL));
+  if Editor_Info(FEditor, MI_GET_INVERT_COLOR, 0) = 1 then
+  begin
+    AFore := GetInvertColor(AFore);
+    ABack := GetInvertColor(ABack);
+  end;
   with TreeView do
   begin
     with Font do
