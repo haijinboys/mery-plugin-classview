@@ -20,7 +20,7 @@ uses
 
 resourcestring
   SName = 'ClassView';
-  SVersion = '2.0.0';
+  SVersion = '2.1.0';
 
 type
   TClassViewFrame = class(TFrame)
@@ -155,7 +155,7 @@ begin
       with FForm do
       begin
         ResetThread;
-        SetTreeColor;
+        SetFont;
         UpdateClassView := True;
       end;
   end;
@@ -259,7 +259,7 @@ begin
       begin
         ResetThread;
         UpdateClassView := True;
-        SetTreeColor;
+        SetFont;
       end;
   end;
   if (nEvent and EVENT_CUSTOM_BAR_CLOSING) <> 0 then
@@ -301,6 +301,11 @@ begin
   end;
   if (nEvent and EVENT_IDLE) <> 0 then
     OnIdle;
+  if (nEvent and EVENT_DPI_CHANGED) <> 0 then
+  begin
+    if FForm <> nil then
+      FForm.SetScale(lParam);
+  end;
 end;
 
 function TClassViewFrame.PluginProc(hwnd: HWND; nMsg: NativeInt; wParam: WPARAM; lParam: LPARAM): LRESULT;

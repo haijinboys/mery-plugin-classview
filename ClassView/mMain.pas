@@ -14,12 +14,12 @@ uses
 {$IF CompilerVersion > 22.9}
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
   System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Vcl.Menus, Vcl.ImgList, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ExtCtrls;
+  Vcl.Menus, Vcl.ImgList, Vcl.StdCtrls, Vcl.ComCtrls, Vcl.ExtCtrls,
 {$ELSE}
   Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, Menus, ImgList, StdCtrls, ComCtrls, ExtCtrls;
+  Dialogs, Menus, ImgList, StdCtrls, ComCtrls, ExtCtrls,
 {$IFEND}
-
+  mPerMonitorDpi;
 
 const
   MaxLineLength = 2000;
@@ -89,7 +89,7 @@ type
     property Items[Index: Integer]: TClassViewItem read Get; default;
   end;
 
-  TMainForm = class(TForm)
+  TMainForm = class(TScaledForm)
     PopupMenu: TPopupMenu;
     GoMenuItem: TMenuItem;
     N1: TMenuItem;
@@ -119,8 +119,8 @@ type
     { Private éŒ¾ }
     FEditor: THandle;
     FBarPos: NativeInt;
-    FFontNameSub: string;
-    FFontSizeSub: NativeInt;
+    FFontName: string;
+    FFontSize: NativeInt;
     FParam: string;
     FAutoRefresh: Boolean;
     FList: TClassViewList;
@@ -140,7 +140,8 @@ type
     { Public éŒ¾ }
     procedure ResetThread;
     procedure ClassViewAll;
-    procedure SetTreeColor;
+    procedure SetFont;
+    procedure SetScale(const Value: NativeInt);
     function SetProperties: Boolean;
     property BarPos: NativeInt read FBarPos write FBarPos;
     property UpdateClassView: Boolean read FUpdateClassView write FUpdateClassView;
@@ -155,8 +156,7 @@ type
 
 var
   MainForm: TMainForm;
-  FFontName: string;
-  FFontSize: NativeInt;
+  FFont: TFont;
   FSymbolList: TStringList;
 
 implementation
@@ -291,8 +291,9 @@ begin
       Size := 8;
     end;
   FEditor := ParentWindow;
-  FFontNameSub := '';
-  FFontSizeSub := 0;
+  FFont.Assign(Font);
+  FFontName := '';
+  FFontSize := 0;
   FParam := '';
   FAutoRefresh := True;
   FList := TClassViewList.Create;
@@ -305,9 +306,9 @@ begin
   ReadIni;
   with Font do
   begin
-    ChangeScale(FFontSize, Size);
-    Name := FFontName;
-    Size := FFontSize;
+    ChangeScale(FFont.Size, Size);
+    Name := FFont.Name;
+    Size := FFont.Size;
   end;
 end;
 
@@ -415,10 +416,20 @@ begin
     Exit;
   with TMemIniFile.Create(S, TEncoding.UTF8) do
     try
-      FFontName := ReadString('MainForm', 'FontName', Font.Name);
-      FFontSize := ReadInteger('MainForm', 'FontSize', Font.Size);
-      FFontNameSub := ReadString('ClassView', 'FontName', FFontNameSub);
-      FFontSizeSub := ReadInteger('ClassView', 'FontSize', FFontSizeSub);
+      with FFont do
+        if ValueExists('MainForm', 'FontName') then
+        begin
+          Name := ReadString('MainForm', 'FontName', Name);
+          Size := ReadInteger('MainForm', 'FontSize', Size);
+          Height := MulDiv(Height, 96, Screen.PixelsPerInch);
+        end
+        else if (Win32MajorVersion > 6) or ((Win32MajorVersion = 6) and (Win32MinorVersion >= 2)) then
+        begin
+          Assign(Screen.IconFont);
+          Height := MulDiv(Height, 96, Screen.PixelsPerInch);
+        end;
+      FFontName := ReadString('ClassView', 'FontName', FFontName);
+      FFontSize := ReadInteger('ClassView', 'FontSize', FFontSize);
       FParam := ReadString('ClassView', 'Param', FParam);
       FAutoRefresh := ReadBool('ClassView', 'AutoRefresh', FAutoRefresh);
     finally
@@ -846,7 +857,7 @@ begin
   end;
 end;
 
-procedure TMainForm.SetTreeColor;
+procedure TMainForm.SetFont;
 var
   AName: array [0 .. 255] of Char;
   ASize: NativeInt;
@@ -865,8 +876,9 @@ begin
   begin
     with Font do
     begin
-      Name := IfThen(FFontNameSub <> '', FFontNameSub, AName);
-      Size := IfThen(FFontSizeSub <> 0, FFontSizeSub, ASize);
+      Name := IfThen(FFontName <> '', FFontName, AName);
+      Size := IfThen(FFontSize <> 0, FFontSize, ASize);
+      Height := MulDiv(Height, Self.PixelsPerInch, 96);
       Color := AFore;
     end;
     Color := ABack;
@@ -887,6 +899,17 @@ begin
     end;
 end;
 
+procedure TMainForm.SetScale(const Value: NativeInt);
+var
+  P: NativeInt;
+begin
+  P := PixelsPerInch;
+  PixelsPerInch := Value;
+  with Font do
+    Height := MulDiv(Height, Self.PixelsPerInch, P);
+  SetFont;
+end;
+
 function TMainForm.SetProperties: Boolean;
 begin
   Result := False;
@@ -900,6 +923,7 @@ end;
 
 initialization
 
+FFont := TFont.Create;
 FSymbolList := TStringList.Create;
 with FSymbolList do
 begin
@@ -925,5 +949,7 @@ finalization
 
 if Assigned(FSymbolList) then
   FreeAndNil(FSymbolList);
+if Assigned(FFont) then
+  FreeAndNil(FFont);
 
 end.
