@@ -4,163 +4,85 @@ interface
 
 uses
 {$IF CompilerVersion > 22.9}
-  Winapi.Windows, Winapi.Messages, System.SysUtils, System.Variants,
-  System.Classes, Vcl.Graphics, Vcl.Controls, Vcl.Forms, Vcl.Dialogs,
-  Winapi.MultiMon;
+  Winapi.Windows, Winapi.Messages, System.Classes, Vcl.Forms, Winapi.MultiMon,
+  Winapi.ShellScaling;
 {$ELSE}
-  Windows, Messages, SysUtils, Variants, Classes, Graphics, Controls, Forms,
-  Dialogs, MultiMon;
+  Windows, Messages, Classes, Forms, MultiMon, ShellScaling;
 {$IFEND}
 
 
 const
-  SHCORE_LIB = 'shcore.dll';
-
-type
-  PROCESS_DPI_AWARENESS = (PROCESS_DPI_UNAWARE, PROCESS_SYSTEM_DPI_AWARE, PROCESS_PER_MONITOR_DPI_AWARE);
-  MONITOR_DPI_TYPE = (MDT_EFFECTIVE_DPI, MDT_ANGULAR_DPI, MDT_RAW_DPI);
-
-const
   WM_DPICHANGED = $02E0;
-  MDT_DEFAULT = MDT_EFFECTIVE_DPI;
 
 type
+  TDWordFiller = record
+{$IFDEF CPUX64}
+    Filler: array [1 .. 4] of Byte;
+{$ENDIF}
+  end;
+
+  TWMDpi = record
+    Msg: Cardinal;
+    MsgFiller: TDWordFiller;
+    YDpi: Word;
+    XDpi: Word;
+    WParamFiller: TDWordFiller;
+    ScalledRect: PRECT;
+    Result: LRESULT;
+  end;
+
+  TMonitorDpiChangedEvent = procedure(Sender: TObject; OldDPI: Integer; NewDPI: Integer) of object;
+
   TScaledForm = class(TForm)
   private
     { Private êÈåæ }
-    FFixedSize: Boolean;
+    FOnAfterMonitorDpiChanged: TMonitorDpiChangedEvent;
+    FOnBeforeMonitorDpiChanged: TMonitorDpiChangedEvent;
   protected
     { Protected êÈåæ }
-    procedure DoShow; override;
-    procedure ReadState(Reader: TReader); override;
-    procedure WMDpiChanged(var Message: TMessage); message WM_DPICHANGED;
+    procedure WMDpiChanged(var Message: TWMDpi); message WM_DPICHANGED;
   public
     { Public êÈåæ }
-    constructor Create(AOwner: TComponent); override;
-    property FixedSize: Boolean read FFixedSize write FFixedSize default False;
+    property OnAfterMonitorDpiChanged: TMonitorDpiChangedEvent read FOnAfterMonitorDpiChanged write FOnAfterMonitorDpiChanged;
+    property OnBeforeMonitorDpiChanged: TMonitorDpiChangedEvent read FOnBeforeMonitorDpiChanged write FOnBeforeMonitorDpiChanged;
   end;
-
-  TGetProcessDpiAwareness = function(hprocess: THandle; var value: PROCESS_DPI_AWARENESS): HRESULT; stdcall;
-  TGetDpiForMonitor = function(hmonitor: HMONITOR; dpiType: MONITOR_DPI_TYPE; out dpiX: UINT; out dpiY: UINT): HRESULT; stdcall;
-
-function IsPerMonitorDpiAware: Boolean;
-
-var
-  FSHCoreHandle: THandle;
-  FSHCoreLoaded: Boolean;
-  GetProcessDpiAwareness: TGetProcessDpiAwareness;
-  GetDpiForMonitor: TGetDpiForMonitor;
 
 implementation
 
 { TScaledForm }
 
-function SHCoreLoadLibrary: Boolean;
-begin
-  FSHCoreHandle := LoadLibrary(SHCORE_LIB);
-  Result := FSHCoreHandle <> 0;
-  if Result then
-  begin
-    @GetProcessDpiAwareness := GetProcAddress(FSHCoreHandle, 'GetProcessDpiAwareness');
-    @GetDpiForMonitor := GetProcAddress(FSHCoreHandle, 'GetDpiForMonitor');
-  end;
-end;
-
-procedure SHCoreFreeLibrary;
-begin
-  if FSHCoreHandle <> 0 then
-    FreeLibrary(FSHCoreHandle);
-  FSHCoreHandle := 0;
-end;
-
-function IsPerMonitorDpiAware: Boolean;
+procedure TScaledForm.WMDpiChanged(var Message: TWMDpi);
 var
-  H: THandle;
-  P: PROCESS_DPI_AWARENESS;
+  R: TRect;
+  OldPPI: NativeInt;
 begin
-  Result := False;
-  if FSHCoreLoaded then
+  if not(csDesigning in ComponentState) then
   begin
-    H := OpenProcess(PROCESS_ALL_ACCESS, False, GetCurrentProcessId);
-    if (H > 0) and Succeeded(GetProcessDpiAwareness(H, P)) then
-      Result := P = PROCESS_PER_MONITOR_DPI_AWARE;
-  end;
-end;
-
-constructor TScaledForm.Create(AOwner: TComponent);
-begin
-  FFixedSize := False;
-  inherited;
-  PixelsPerInch := 96;
-end;
-
-procedure TScaledForm.DoShow;
-var
-  M: TMonitor;
-  X, Y: UINT;
-  P: NativeInt;
-begin
-  if IsPerMonitorDpiAware then
-  begin
-    M := Screen.MonitorFromWindow(Self.Handle, mdNearest);
-    if (M.Handle <> 0) and (GetDpiForMonitor(M.Handle, MDT_DEFAULT, X, Y) = S_OK) then
+    if (Message.YDpi = 0) or (PixelsPerInch = 0) then
     begin
-      P := PixelsPerInch;
-      PixelsPerInch := Y;
-      if P <> PixelsPerInch then
-        ChangeScale(PixelsPerInch, P);
+      if (Application.MainForm <> nil) and (Application.MainForm.PixelsPerInch <> 0) then
+        PixelsPerInch := Application.MainForm.PixelsPerInch
+      else
+        Exit;
     end;
-  end
-  else
-  begin
-    P := PixelsPerInch;
-    PixelsPerInch := Screen.PixelsPerInch;
-    if P <> PixelsPerInch then
-      ChangeScale(PixelsPerInch, P);
-  end;
-  inherited;
-end;
-
-procedure TScaledForm.ReadState(Reader: TReader);
-begin
-  Scaled := False;
-  inherited;
-end;
-
-procedure TScaledForm.WMDpiChanged(var Message: TMessage);
-var
-  R: PRect;
-  P: NativeInt;
-begin
-  if not Visible then
-    Exit;
-  if IsPerMonitorDpiAware then
-  begin
-    if not FFixedSize then
+    if Message.YDpi <> PixelsPerInch then
     begin
-      R := PRect(Message.LParam);
+      if Assigned(FOnBeforeMonitorDpiChanged) then
+        FOnBeforeMonitorDpiChanged(Self, PixelsPerInch, Message.YDpi);
+      // ChangeScale(Message.YDpi, PixelsPerInch);
+      R := Message.ScalledRect^;
       SetWindowPos(Self.Handle, 0, R.Left, R.Top, R.Right - R.Left, R.Bottom - R.Top, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOACTIVATE);
-    end;
-    P := PixelsPerInch;
-    PixelsPerInch := HIWORD(Message.WParam);
-    if P <> PixelsPerInch then
-    begin
-      ScaleControls(PixelsPerInch, P);
-      Font.Height := MulDiv(Font.Height, PixelsPerInch, P);
-      ScaleConstraints(PixelsPerInch, P);
+      ScaleControls(Message.YDpi, PixelsPerInch);
+      Font.Height := MulDiv(Font.Height, Message.YDpi, PixelsPerInch);
+      ScaleConstraints(Message.YDpi, PixelsPerInch);
       Resize;
+      OldPPI := PixelsPerInch;
+      PixelsPerInch := Message.YDpi;
+      if Assigned(FOnAfterMonitorDpiChanged) then
+        FOnAfterMonitorDpiChanged(Self, OldPPI, PixelsPerInch);
     end;
+    Message.Result := 0;
   end;
 end;
-
-initialization
-
-if (Win32MajorVersion > 6) or ((Win32MajorVersion = 6) and (Win32MinorVersion >= 3)) then
-  FSHCoreLoaded := SHCoreLoadLibrary;
-
-finalization
-
-if FSHCoreLoaded then
-  SHCoreFreeLibrary;
 
 end.

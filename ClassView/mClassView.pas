@@ -20,7 +20,7 @@ uses
 
 resourcestring
   SName = 'ClassView';
-  SVersion = '2.1.0';
+  SVersion = '3.0.0';
 
 type
   TClassViewFrame = class(TFrame)

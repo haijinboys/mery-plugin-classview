@@ -243,7 +243,7 @@ end;
 
 function TSymbolList.Get(Index: Integer): TSymbolItem;
 begin
-  Result := TSymbolItem( inherited Get(Index));
+  Result := TSymbolItem(inherited Get(Index));
 end;
 
 { TClassViewItem }
@@ -277,7 +277,7 @@ end;
 
 function TClassViewList.Get(Index: Integer): TClassViewItem;
 begin
-  Result := TClassViewItem( inherited Get(Index));
+  Result := TClassViewItem(inherited Get(Index));
 end;
 
 { TMainForm }
@@ -661,17 +661,15 @@ procedure TMainForm.ClassViewAll;
   end;
 
 var
-  S, T, U: string;
-  I, P, Idx, Len: NativeInt;
+  S: string;
+  I, P, Idx: NativeInt;
   Path: array [0 .. MAX_PATH] of Char;
   Temp, ClassViewPath, ClassViewParam: string;
   SI: TStartupInfo;
   PI: TProcessInformation;
   Item: TSymbolItem;
   List: TSymbolList;
-  A, B: TStringDynArray;
   L, M: TStringList;
-  O: TObject;
   AList: TClassViewList;
   UpdateAll: Boolean;
   FirstUpdate: NativeInt;
