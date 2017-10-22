@@ -3,7 +3,7 @@ object PropForm: TPropForm
   Top = 0
   BorderStyle = bsDialog
   Caption = #12463#12521#12473#12499#12517#12540
-  ClientHeight = 169
+  ClientHeight = 177
   ClientWidth = 241
   Color = clBtnFace
   Font.Charset = DEFAULT_CHARSET
@@ -12,7 +12,6 @@ object PropForm: TPropForm
   Font.Name = 'Tahoma'
   Font.Style = []
   OldCreateOrder = False
-  Position = poScreenCenter
   OnClose = FormClose
   OnCreate = FormCreate
   OnDestroy = FormDestroy
@@ -30,10 +29,17 @@ object PropForm: TPropForm
   object ParamLabel: TLabel
     Left = 8
     Top = 56
-    Width = 134
+    Width = 135
     Height = 13
-    Caption = 'Ctags'#12408#12398#36861#21152#12497#12521#12513#12540#12479'(&P):'
+    Caption = 'Ctags'#12408#12398#36861#21152#12497#12521#12513#12540#12479'(&A):'
     FocusControl = ParamEdit
+  end
+  object Bevel: TBevel
+    Left = 0
+    Top = 136
+    Width = 241
+    Height = 9
+    Shape = bsTopLine
   end
   object BarPosComboBox: TComboBox
     Left = 8
@@ -57,7 +63,7 @@ object PropForm: TPropForm
   end
   object OKButton: TButton
     Left = 64
-    Top = 136
+    Top = 144
     Width = 81
     Height = 25
     Caption = 'OK'
@@ -67,7 +73,7 @@ object PropForm: TPropForm
   end
   object CancelButton: TButton
     Left = 152
-    Top = 136
+    Top = 144
     Width = 81
     Height = 25
     Cancel = True

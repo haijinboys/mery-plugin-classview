@@ -3,7 +3,7 @@
 //
 // Copyright (c) Kuro. All Rights Reserved.
 // e-mail: info@haijin-boys.com
-// www:    http://www.haijin-boys.com/
+// www:    https://www.haijin-boys.com/
 // -----------------------------------------------------------------------------
 
 library ClassView;
@@ -15,10 +15,9 @@ library ClassView;
 
 
 uses
-  Windows,
-  SysUtils,
-  Classes,
-  Themes,
+  Winapi.Windows,
+  System.SysUtils,
+  System.Classes,
   mCommon in 'mCommon.pas',
   mMain in 'mMain.pas' {MainForm},
   mProp in 'mProp.pas' {PropForm},
@@ -42,42 +41,42 @@ var
 
 procedure OnCommand(hwnd: HWND); stdcall;
 var
-  Frame: TFrame;
+  LFrame: TFrame;
 begin
-  Frame := FList.Find(hwnd);
-  if Frame <> nil then
-    Frame.OnCommand(hwnd);
+  LFrame := FList.Find(hwnd);
+  if LFrame <> nil then
+    LFrame.OnCommand(hwnd);
 end;
 
 function QueryStatus(hwnd: HWND; pbChecked: PBOOL): BOOL; stdcall;
 var
-  Frame: TFrame;
+  LFrame: TFrame;
 begin
   Result := False;
-  Frame := FList.Find(hwnd);
-  if Frame <> nil then
-    Result := Frame.QueryStatus(hwnd, pbChecked);
+  LFrame := FList.Find(hwnd);
+  if LFrame <> nil then
+    Result := LFrame.QueryStatus(hwnd, pbChecked);
 end;
 
-function GetMenuTextID: NativeInt; stdcall;
+function GetMenuTextID: Cardinal; stdcall;
 begin
   Result := IDS_MENU_TEXT;
 end;
 
-function GetStatusMessageID: NativeInt; stdcall;
+function GetStatusMessageID: Cardinal; stdcall;
 begin
   Result := IDS_STATUS_MESSAGE;
 end;
 
-function GetIconID: NativeInt; stdcall;
+function GetIconID: Cardinal; stdcall;
 begin
   Result := IDI_ICON;
 end;
 
-procedure OnEvents(hwnd: HWND; nEvent: NativeInt; lParam: LPARAM); stdcall;
+procedure OnEvents(hwnd: HWND; nEvent: Cardinal; lParam: LPARAM); stdcall;
 var
-  I: NativeInt;
-  AFrame: TFrame;
+  I: Integer;
+  LFrame: TFrame;
 begin
   if (nEvent and EVENT_CREATE) <> 0 then
   begin
@@ -89,22 +88,22 @@ begin
     begin
       if (nEvent and EVENT_CREATE_FRAME) <> 0 then
       begin
-        AFrame := TClassViewFrame.Create;
-        with AFrame do
+        LFrame := TClassViewFrame.Create;
+        with LFrame do
         begin
           Handle := hwnd;
           OnEvents(hwnd, nEvent, lParam);
         end;
-        FList.Add(AFrame);
+        FList.Add(LFrame);
       end
       else if (nEvent and EVENT_CLOSE_FRAME) <> 0 then
       begin
-        AFrame := FList.Find(hwnd);
-        if AFrame <> nil then
-          with AFrame do
+        LFrame := FList.Find(hwnd);
+        if LFrame <> nil then
+          with LFrame do
           begin
             OnEvents(hwnd, nEvent, lParam);
-            FList.Remove(AFrame);
+            FList.Remove(LFrame);
             Free;
           end;
       end
@@ -113,21 +112,20 @@ begin
         for I := FList.Count - 1 downto 0 do
           FList[I].Free;
         FList.Free;
-        ThemeServices.Free;
       end
       else
       begin
-        AFrame := FList.Find(hwnd);
-        if AFrame <> nil then
-          AFrame.OnEvents(hwnd, nEvent, lParam);
+        LFrame := FList.Find(hwnd);
+        if LFrame <> nil then
+          LFrame.OnEvents(hwnd, nEvent, lParam);
       end;
     end;
   end;
 end;
 
-function PluginProc(hwnd: HWND; nMsg: NativeInt; wParam: WPARAM; lParam: LPARAM): LRESULT; stdcall;
+function PluginProc(hwnd: HWND; nMsg: Cardinal; wParam: WPARAM; lParam: LPARAM): LRESULT; stdcall;
 var
-  Frame: TFrame;
+  LFrame: TFrame;
 begin
   Result := 0;
   case nMsg of
@@ -145,14 +143,14 @@ begin
       end;
   else
     begin
-      Frame := FList.Find(hwnd);
-      if Frame = nil then
+      LFrame := FList.Find(hwnd);
+      if LFrame = nil then
       begin
         hwnd := GetParent(hwnd);
-        Frame := FList.Find(hwnd);
+        LFrame := FList.Find(hwnd);
       end;
-      if Frame <> nil then
-        Result := Frame.PluginProc(hwnd, nMsg, wParam, lParam);
+      if LFrame <> nil then
+        Result := LFrame.PluginProc(hwnd, nMsg, wParam, lParam);
     end;
   end;
 end;

@@ -3,7 +3,7 @@
 //
 // Copyright (c) Kuro. All Rights Reserved.
 // e-mail: info@haijin-boys.com
-// www:    http://www.haijin-boys.com/
+// www:    https://www.haijin-boys.com/
 // -----------------------------------------------------------------------------
 
 unit mMain;
@@ -33,7 +33,7 @@ type
     FParentType: string;
     FSymbolName: string;
     FSymbolType: string;
-    FSymbolLine: NativeInt;
+    FSymbolLine: Integer;
   public
     { Public éŒ¾ }
     constructor Create;
@@ -41,14 +41,14 @@ type
     property ParentType: string read FParentType write FParentType;
     property SymbolName: string read FSymbolName write FSymbolName;
     property SymbolType: string read FSymbolType write FSymbolType;
-    property SymbolLine: NativeInt read FSymbolLine write FSymbolLine;
+    property SymbolLine: Integer read FSymbolLine write FSymbolLine;
   end;
 
   TSymbolList = class(TList)
   private
     { Private éŒ¾ }
     FSymbolType: string;
-    FSymbolLine: NativeInt;
+    FSymbolLine: Integer;
     function Get(Index: Integer): TSymbolItem; inline;
   public
     { Public éŒ¾ }
@@ -57,23 +57,23 @@ type
     procedure Clear; override;
     property Items[Index: Integer]: TSymbolItem read Get; default;
     property SymbolType: string read FSymbolType write FSymbolType;
-    property SymbolLine: NativeInt read FSymbolLine write FSymbolLine;
+    property SymbolLine: Integer read FSymbolLine write FSymbolLine;
   end;
 
   TClassViewItem = class
   private
     { Private éŒ¾ }
     FNode: TTreeNode;
-    FLineNum: NativeInt;
-    FLevel: NativeInt;
+    FLineNum: Integer;
+    FLevel: Integer;
     FSymbolName: string;
     FSymbolType: string;
   public
     { Public éŒ¾ }
-    constructor Create(ALineNum, ALevel: NativeInt; ASymbolName, ASymbolType: string);
+    constructor Create(ALineNum: Integer; ALevel: Integer; const ASymbolName, ASymbolType: string);
     property Node: TTreeNode read FNode write FNode;
-    property LineNum: NativeInt read FLineNum write FLineNum;
-    property Level: NativeInt read FLevel write FLevel;
+    property LineNum: Integer read FLineNum write FLineNum;
+    property Level: Integer read FLevel write FLevel;
     property SymbolName: string read FSymbolName write FSymbolName;
     property SymbolType: string read FSymbolType write FSymbolType;
   end;
@@ -100,7 +100,10 @@ type
     N3: TMenuItem;
     PropPopupMenuItem: TMenuItem;
     TreeView: TTreeView;
-    ImageList: TImageList;
+    SmallImageList: TImageList;
+    MediumImageList: TImageList;
+    LargeImageList: TImageList;
+    ExtraLargeImageList: TImageList;
     procedure FormCreate(Sender: TObject);
     procedure FormDestroy(Sender: TObject);
     procedure FormShow(Sender: TObject);
@@ -118,14 +121,14 @@ type
   private
     { Private éŒ¾ }
     FEditor: THandle;
-    FBarPos: NativeInt;
+    FBarPos: Integer;
     FFontName: string;
-    FFontSize: NativeInt;
+    FFontSize: Integer;
     FParam: string;
     FAutoRefresh: Boolean;
     FList: TClassViewList;
     FUpdateClassView: Boolean;
-    FWorkFlag: NativeInt;
+    FWorkFlag: Integer;
     FWorkThread: THandle;
     FAbortThread: Boolean;
     FQueEvent: THandle;
@@ -133,6 +136,7 @@ type
     FPoint: TPoint;
     procedure ReadIni;
     procedure WriteIni;
+    procedure UpdateTreeView;
     procedure UpdateTreeViewAll;
     procedure UpdateTreeViewString;
     procedure ClassViewSelected(Node: TTreeNode; FocusView: Boolean);
@@ -141,13 +145,13 @@ type
     procedure ResetThread;
     procedure ClassViewAll;
     procedure SetFont;
-    procedure SetScale(const Value: NativeInt);
+    procedure SetScale(const Value: Integer);
     function SetProperties: Boolean;
-    property BarPos: NativeInt read FBarPos write FBarPos;
+    property BarPos: Integer read FBarPos write FBarPos;
     property UpdateClassView: Boolean read FUpdateClassView write FUpdateClassView;
     property Editor: THandle read FEditor write FEditor;
     property WorkHandle: THandle read FWorkThread write FWorkThread;
-    property WorkFlag: NativeInt read FWorkFlag write FWorkFlag;
+    property WorkFlag: Integer read FWorkFlag write FWorkFlag;
     property AbortThread: Boolean read FAbortThread write FAbortThread;
     property QueEvent: THandle read FQueEvent write FQueEvent;
     property Mutex: THandle read FMutex write FMutex;
@@ -156,7 +160,6 @@ type
 
 var
   MainForm: TMainForm;
-  FFont: TFont;
   FSymbolList: TStringList;
 
 implementation
@@ -173,10 +176,10 @@ uses
 
 
 function WaitMessageLoop(Count: LongWord; var Handles: THandle;
-  Milliseconds: DWORD): NativeInt;
+  Milliseconds: DWORD): Integer;
 var
   Quit: Boolean;
-  ExitCode: NativeInt;
+  ExitCode: Integer;
   WaitResult: DWORD;
   Msg: TMsg;
 begin
@@ -189,7 +192,7 @@ begin
         WM_QUIT:
           begin
             Quit := True;
-            ExitCode := NativeInt(Msg.wParam);
+            ExitCode := Integer(Msg.wParam);
             Break;
           end;
         WM_MOUSEMOVE:
@@ -204,7 +207,7 @@ begin
   until WaitResult <> WAIT_OBJECT_0 + 1;
   if Quit then
     PostQuitMessage(ExitCode);
-  Result := NativeInt(WaitResult - WAIT_OBJECT_0);
+  Result := Integer(WaitResult - WAIT_OBJECT_0);
 end;
 
 { TSymbolItem }
@@ -234,7 +237,7 @@ end;
 
 procedure TSymbolList.Clear;
 var
-  I: NativeInt;
+  I: Integer;
 begin
   for I := 0 to Count - 1 do
     Items[I].Free;
@@ -248,8 +251,8 @@ end;
 
 { TClassViewItem }
 
-constructor TClassViewItem.Create(ALineNum, ALevel: NativeInt; ASymbolName,
-  ASymbolType: string);
+constructor TClassViewItem.Create(ALineNum: Integer; ALevel: Integer;
+  const ASymbolName, ASymbolType: string);
 begin
   FNode := nil;
   FLineNum := ALineNum;
@@ -268,7 +271,7 @@ end;
 
 procedure TClassViewList.Clear;
 var
-  I: NativeInt;
+  I: Integer;
 begin
   for I := 0 to Count - 1 do
     Items[I].Free;
@@ -284,14 +287,8 @@ end;
 
 procedure TMainForm.FormCreate(Sender: TObject);
 begin
-  if Win32MajorVersion < 6 then
-    with Font do
-    begin
-      Name := 'Tahoma';
-      Size := 8;
-    end;
+  TScaledForm.DefaultFont.Assign(Font);
   FEditor := ParentWindow;
-  FFont.Assign(Font);
   FFontName := '';
   FFontSize := 0;
   FParam := '';
@@ -304,12 +301,6 @@ begin
   FPoint.X := -1;
   FPoint.Y := -1;
   ReadIni;
-  with Font do
-  begin
-    ChangeScale(FFont.Size, Size);
-    Name := FFont.Name;
-    Size := FFont.Size;
-  end;
 end;
 
 procedure TMainForm.FormDestroy(Sender: TObject);
@@ -332,7 +323,7 @@ end;
 
 procedure TMainForm.FormShow(Sender: TObject);
 begin
-  //
+  UpdateTreeView;
 end;
 
 procedure TMainForm.FormClose(Sender: TObject; var Action: TCloseAction);
@@ -342,10 +333,10 @@ end;
 
 procedure TMainForm.GoMenuItemClick(Sender: TObject);
 var
-  ANode: TTreeNode;
+  LNode: TTreeNode;
 begin
-  ANode := TreeView.GetNodeAt(FPoint.X, FPoint.Y);
-  if ANode = TreeView.Selected then
+  LNode := TreeView.GetNodeAt(FPoint.X, FPoint.Y);
+  if LNode = TreeView.Selected then
     ClassViewSelected(TreeView.Selected, True);
 end;
 
@@ -372,19 +363,19 @@ end;
 
 procedure TMainForm.TreeViewClick(Sender: TObject);
 var
-  ANode: TTreeNode;
+  LNode: TTreeNode;
 begin
-  ANode := TreeView.GetNodeAt(FPoint.X, FPoint.Y);
-  if ANode = TreeView.Selected then
+  LNode := TreeView.GetNodeAt(FPoint.X, FPoint.Y);
+  if LNode = TreeView.Selected then
     ClassViewSelected(TreeView.Selected, False);
 end;
 
 procedure TMainForm.TreeViewDblClick(Sender: TObject);
 var
-  ANode: TTreeNode;
+  LNode: TTreeNode;
 begin
-  ANode := TreeView.GetNodeAt(FPoint.X, FPoint.Y);
-  if ANode = TreeView.Selected then
+  LNode := TreeView.GetNodeAt(FPoint.X, FPoint.Y);
+  if LNode = TreeView.Selected then
     ClassViewSelected(TreeView.Selected, True);
 end;
 
@@ -416,18 +407,14 @@ begin
     Exit;
   with TMemIniFile.Create(S, TEncoding.UTF8) do
     try
-      with FFont do
+      with TScaledForm.DefaultFont do
         if ValueExists('MainForm', 'FontName') then
         begin
           Name := ReadString('MainForm', 'FontName', Name);
           Size := ReadInteger('MainForm', 'FontSize', Size);
-          Height := MulDiv(Height, 96, Screen.PixelsPerInch);
         end
-        else if (Win32MajorVersion > 6) or ((Win32MajorVersion = 6) and (Win32MinorVersion >= 2)) then
-        begin
+        else if CheckWin32Version(6, 2) then
           Assign(Screen.IconFont);
-          Height := MulDiv(Height, 96, Screen.PixelsPerInch);
-        end;
       FFontName := ReadString('ClassView', 'FontName', FFontName);
       FFontSize := ReadInteger('ClassView', 'FontSize', FFontSize);
       FParam := ReadString('ClassView', 'Param', FParam);
@@ -465,25 +452,25 @@ end;
 
 procedure TMainForm.ClassViewSelected(Node: TTreeNode; FocusView: Boolean);
 var
-  AClassView: NativeInt;
-  APos: TPoint;
+  LClassView: Integer;
+  LPos: TPoint;
 begin
   if Node = nil then
     Exit;
-  AClassView := Node.StateIndex;
-  if not InRange(AClassView, 0, FList.Count - 1) then
+  LClassView := Node.StateIndex;
+  if not InRange(LClassView, 0, FList.Count - 1) then
     Exit;
-  APos.X := 0;
-  APos.Y := FList[AClassView].LineNum;
-  if APos.Y < 0 then
+  LPos.X := 0;
+  LPos.Y := FList[LClassView].LineNum;
+  if LPos.Y < 0 then
     Exit;
   Editor_Redraw(FEditor, False);
   try
-    Editor_SetCaretPos(FEditor, POS_LOGICAL, @APos);
+    Editor_SetCaretPos(FEditor, POS_LOGICAL, @LPos);
     if FocusView then
       Editor_ExecCommand(FEditor, MEID_WINDOW_ACTIVE_PANE);
-    Editor_GetCaretPos(FEditor, POS_VIEW, @APos);
-    Editor_SetScrollPos(FEditor, @APos);
+    Editor_GetCaretPos(FEditor, POS_VIEW, @LPos);
+    Editor_SetScrollPos(FEditor, @LPos);
   finally
     Editor_Redraw(FEditor, True);
   end;
@@ -513,11 +500,24 @@ begin
   end;
 end;
 
+procedure TMainForm.UpdateTreeView;
+begin
+  with TreeView do
+    if PixelsPerInch >= 240 then
+      Images := ExtraLargeImageList
+    else if PixelsPerInch >= 192 then
+      Images := LargeImageList
+    else if PixelsPerInch >= 144 then
+      Images := MediumImageList
+    else
+      Images := SmallImageList;
+end;
+
 procedure TMainForm.UpdateTreeViewAll;
 var
-  I, J: NativeInt;
+  I, J: Integer;
   ParentItem: array [0 .. MaxDepth] of TTreeNode;
-  ANode: TTreeNode;
+  LNode: TTreeNode;
   Item: TClassViewItem;
 begin
   TreeView.Items.BeginUpdate;
@@ -531,23 +531,23 @@ begin
       Item := FList[I];
       if Item.Node <> nil then
       begin
-        ANode := TreeView.Items.GetNode(Item.Node.ItemId);
-        if ANode <> nil then
-          ANode.Text := Item.SymbolName;
+        LNode := TreeView.Items.GetNode(Item.Node.ItemId);
+        if LNode <> nil then
+          LNode.Text := Item.SymbolName;
       end
       else
       begin
         if ParentItem[Item.Level - 1] = nil then
-          ANode := TreeView.Items.AddChild(nil, Item.SymbolName)
+          LNode := TreeView.Items.AddChild(nil, Item.SymbolName)
         else
-          ANode := TreeView.Items.AddChild(ParentItem[Item.Level - 1], Item.SymbolName);
-        with Item, ANode do
+          LNode := TreeView.Items.AddChild(ParentItem[Item.Level - 1], Item.SymbolName);
+        with Item, LNode do
         begin
           ImageIndex := StrToIntDef(FSymbolList.Values[SymbolType], 10);
           SelectedIndex := ImageIndex;
         end;
-        ANode.StateIndex := I;
-        Item.Node := ANode;
+        LNode.StateIndex := I;
+        Item.Node := LNode;
       end;
       for J := Item.Level to MaxDepth do
         ParentItem[J] := Item.Node;
@@ -561,7 +561,7 @@ end;
 function Sort(List: TStringList; Index1, Index2: Integer): Integer;
 var
   L, R: string;
-  P, Q: NativeInt;
+  P, Q: Integer;
 begin
   L := List[Index1];
   R := List[Index2];
@@ -582,7 +582,7 @@ end;
 procedure TMainForm.ClassViewAll;
   function GetTempPath: string;
   var
-    I: NativeInt;
+    I: Integer;
   begin
     Result := '';
     SetLastError(ERROR_SUCCESS);
@@ -662,7 +662,7 @@ procedure TMainForm.ClassViewAll;
 
 var
   S: string;
-  I, P, Idx: NativeInt;
+  I, J, Idx: Integer;
   Path: array [0 .. MAX_PATH] of Char;
   Temp, ClassViewPath, ClassViewParam: string;
   SI: TStartupInfo;
@@ -670,12 +670,12 @@ var
   Item: TSymbolItem;
   List: TSymbolList;
   L, M: TStringList;
-  AList: TClassViewList;
+  LList: TClassViewList;
   UpdateAll: Boolean;
-  FirstUpdate: NativeInt;
-  Src, Dest: NativeInt;
-  ANode: TTreeNode;
-  AItem: TClassViewItem;
+  FirstUpdate: Integer;
+  Src, Dest: Integer;
+  LNode: TTreeNode;
+  LItem: TClassViewItem;
 begin
   Editor_Info(FEditor, MI_GET_FILE_NAME, LPARAM(@Path));
   if Path = '' then
@@ -691,7 +691,7 @@ begin
   WaitForSingleObject(PI.hProcess, INFINITE);
   CloseHandle(PI.hProcess);
   CloseHandle(PI.hThread);
-  AList := TClassViewList.Create;
+  LList := TClassViewList.Create;
   try
     L := TStringList.Create;
     M := TStringList.Create;
@@ -732,11 +732,11 @@ begin
         S := M[I];
         List := TSymbolList(M.Objects[I]);
         with List do
-          AList.Add(TClassViewItem.Create(SymbolLine, 1, S, SymbolType));
-        for P := 0 to List.Count - 1 do
+          LList.Add(TClassViewItem.Create(SymbolLine, 1, S, SymbolType));
+        for J := 0 to List.Count - 1 do
         begin
-          with List[P] do
-            AList.Add(TClassViewItem.Create(SymbolLine, 2, SymbolName, SymbolType));
+          with List[J] do
+            LList.Add(TClassViewItem.Create(SymbolLine, 2, SymbolName, SymbolType));
         end;
       end;
     finally
@@ -765,11 +765,11 @@ begin
     end
     else
     begin
-      for I := 0 to Min(FList.Count, AList.Count) - 1 do
+      for I := 0 to Min(FList.Count, LList.Count) - 1 do
       begin
         if FAbortThread then
           Exit;
-        if FList[I].Level <> AList[I].Level then
+        if FList[I].Level <> LList[I].Level then
         begin
           if not UpdateAll then
           begin
@@ -783,10 +783,10 @@ begin
           begin
             if FList[I].Node = nil then
               Break;
-            ANode := FList[I].Node.GetNext;
-            if ANode = nil then
+            LNode := FList[I].Node.GetNext;
+            if LNode = nil then
               Break;
-            ANode.Delete;
+            LNode.Delete;
           end;
           if FList[I].Node <> nil then
             FList[I].Node.Delete;
@@ -796,14 +796,14 @@ begin
     end;
     Src := 0;
     Dest := 0;
-    for I := 0 to Min(FirstUpdate, AList.Count) - 1 do
+    for I := 0 to Min(FirstUpdate, LList.Count) - 1 do
     begin
       with FList[I] do
       begin
-        LineNum := AList[I].LineNum;
-        Level := AList[I].Level;
-        SymbolName := AList[I].SymbolName;
-        SymbolType := AList[I].SymbolType;
+        LineNum := LList[I].LineNum;
+        Level := LList[I].Level;
+        SymbolName := LList[I].SymbolName;
+        SymbolType := LList[I].SymbolType;
       end;
       Inc(Src);
       Inc(Dest);
@@ -816,32 +816,32 @@ begin
       begin
         if FList[Dest].Node = nil then
           Break;
-        ANode := FList[Dest].Node.GetNext;
-        if ANode = nil then
+        LNode := FList[Dest].Node.GetNext;
+        if LNode = nil then
           Break;
-        ANode.Delete;
+        LNode.Delete;
       end;
       if FList[Dest].Node <> nil then
         FList[Dest].Node.Delete;
       for I := FList.Count - 1 downto Dest do
       begin
-        AItem := FList[I];
-        FList.Remove(AItem);
-        AItem.Free;
+        LItem := FList[I];
+        FList.Remove(LItem);
+        LItem.Free;
       end;
     end;
-    if InRange(Src, 0, AList.Count - 1) then
+    if InRange(Src, 0, LList.Count - 1) then
     begin
-      for I := Src to AList.Count - 1 do
+      for I := Src to LList.Count - 1 do
       begin
         if not UpdateAll then
           UpdateAll := True;
-        with AList[I] do
+        with LList[I] do
         begin
-          AItem := TClassViewItem.Create(LineNum, Level, SymbolName, SymbolType);
-          AItem.Node := Node;
+          LItem := TClassViewItem.Create(LineNum, Level, SymbolName, SymbolType);
+          LItem.Node := Node;
         end;
-        FList.Add(AItem);
+        FList.Add(LItem);
       end;
     end;
     if FAbortThread then
@@ -851,61 +851,62 @@ begin
     else
       UpdateTreeViewString;
   finally
-    AList.Free;
+    LList.Free;
   end;
 end;
 
 procedure TMainForm.SetFont;
 var
-  AName: array [0 .. 255] of Char;
-  ASize: NativeInt;
-  AFore, ABack: TColor;
+  LName: array [0 .. 255] of Char;
+  LSize: Integer;
+  LFore, LBack: TColor;
 begin
-  Editor_Info(FEditor, MI_GET_FONT_NAME, LPARAM(@AName));
-  ASize := Editor_Info(FEditor, MI_GET_FONT_SIZE, 0);
-  AFore := TColor(Editor_Info(FEditor, MI_GET_TEXT_COLOR, COLOR_GENERAL));
-  ABack := TColor(Editor_Info(FEditor, MI_GET_BACK_COLOR, COLOR_GENERAL));
+  Editor_Info(FEditor, MI_GET_FONT_NAME, LPARAM(@LName));
+  LSize := Editor_Info(FEditor, MI_GET_FONT_SIZE, 0);
+  LFore := TColor(Editor_Info(FEditor, MI_GET_TEXT_COLOR, COLOR_GENERAL));
+  LBack := TColor(Editor_Info(FEditor, MI_GET_BACK_COLOR, COLOR_GENERAL));
   if Editor_Info(FEditor, MI_GET_INVERT_COLOR, 0) = 1 then
   begin
-    AFore := GetInvertColor(AFore);
-    ABack := GetInvertColor(ABack);
+    LFore := GetInvertColor(LFore);
+    LBack := GetInvertColor(LBack);
   end;
   with TreeView do
   begin
     with Font do
     begin
-      Name := IfThen(FFontName <> '', FFontName, AName);
-      Size := IfThen(FFontSize <> 0, FFontSize, ASize);
+      Name := IfThen(FFontName <> '', FFontName, LName);
+      Size := IfThen(FFontSize <> 0, FFontSize, LSize);
       Height := MulDiv(Height, Self.PixelsPerInch, 96);
-      Color := AFore;
+      Color := LFore;
     end;
-    Color := ABack;
+    Color := LBack;
   end;
 end;
 
 procedure TMainForm.UpdateTreeViewString;
 var
-  I: NativeInt;
-  ANode: TTreeNode;
+  I: Integer;
+  LNode: TTreeNode;
 begin
   for I := 0 to FList.Count - 1 do
     if FList[I].Node <> nil then
     begin
-      ANode := TreeView.Items.GetNode(FList[I].Node.ItemId);
-      if ANode <> nil then
-        ANode.Text := FList[I].SymbolName;
+      LNode := TreeView.Items.GetNode(FList[I].Node.ItemId);
+      if LNode <> nil then
+        LNode.Text := FList[I].SymbolName;
     end;
 end;
 
-procedure TMainForm.SetScale(const Value: NativeInt);
+procedure TMainForm.SetScale(const Value: Integer);
 var
-  P: NativeInt;
+  P: Integer;
 begin
   P := PixelsPerInch;
   PixelsPerInch := Value;
   with Font do
     Height := MulDiv(Height, Self.PixelsPerInch, P);
   SetFont;
+  UpdateTreeView;
 end;
 
 function TMainForm.SetProperties: Boolean;
@@ -921,25 +922,23 @@ end;
 
 initialization
 
-FFont := TFont.Create;
 FSymbolList := TStringList.Create;
 with FSymbolList do
 begin
-  Values['namespace'] := '15';
-  Values['typedef'] := '20';
-  Values['procedure'] := '13';
-  Values['function'] := '12';
-  Values['method'] := '13';
+  Values['namespace'] := '6';
+  Values['typedef'] := '7';
+  Values['procedure'] := '4';
+  Values['function'] := '4';
+  Values['method'] := '4';
   Values['const'] := '1';
-  Values['variable'] := '7';
-  Values['field'] := '7';
-  Values['enumerator'] := '4';
-  Values['macro'] := '9';
-  Values['member'] := '7';
-  Values['package'] := '14';
+  Values['variable'] := '3';
+  Values['field'] := '3';
+  Values['enumerator'] := '2';
+  Values['macro'] := '7';
+  Values['member'] := '3';
+  Values['package'] := '5';
   Values['class'] := '0';
-  Values['struct'] := '18';
-  Values['cursor'] := '10';
+  Values['struct'] := '8';
   Values['label'] := '1';
 end;
 
@@ -947,7 +946,5 @@ finalization
 
 if Assigned(FSymbolList) then
   FreeAndNil(FSymbolList);
-if Assigned(FFont) then
-  FreeAndNil(FFont);
 
 end.

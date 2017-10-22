@@ -1,0 +1,38 @@
+--- System.IniFiles.pas.orig	2012-02-24 04:47:01.570476900 +0900
++++ System.IniFiles.pas	2015-09-12 22:53:48.000000000 +0900
+@@ -841,20 +841,35 @@
+   Strings := nil;
+   for I := 0 to List.Count - 1 do
+   begin
++    // modified begin
++    (*
+     S := Trim(List[I]);
++    *)
++    S := List[I];
++    // modified end
+     if (S <> '') and (S[1] <> ';') then
+       if (S[1] = '[') and (S[Length(S)] = ']') then
+       begin
+         Delete(S, 1, 1);
+         SetLength(S, Length(S)-1);
++        // modified begin
++        (*
+         Strings := AddSection(Trim(S));
++        *)
++        Strings := AddSection(S);
++        // modified end
+       end
+       else
+         if Strings <> nil then
+         begin
+           J := Pos('=', S);
+           if J > 0 then // remove spaces before and after '='
++            // modified begin
++            (*
+             Strings.Add(Trim(Copy(S, 1, J-1)) + '=' + Trim(Copy(S, J+1, MaxInt)) )
++            *)
++            Strings.Add(Copy(S, 1, J-1) + '=' + Copy(S, J+1, MaxInt) )
++            // modified end
+           else
+             Strings.Add(S);
+         end;

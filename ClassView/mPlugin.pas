@@ -58,6 +58,12 @@ const
   COLOR_CONTROL = 41;
   COLOR_INVALID = 42;
 
+  // 2.5.0
+  DWRITE_GAMMA = 256;
+  DWRITE_ENHANCED_CONTRAST = 257;
+  DWRITE_CLEAR_TYPE_LEVEL = 258;
+  DWRITE_RENDERING_MODE = 259;
+
   CUSTOM_BAR_LEFT = 0;
   CUSTOM_BAR_TOP = 1;
   CUSTOM_BAR_RIGHT = 2;
@@ -146,6 +152,8 @@ const
   ME_TOOL_BAR_SHOW = ME_FIRST + 47;
   ME_OUTPUT_STRING = ME_FIRST + 48;
   ME_GET_OUTPUT_STRING = ME_FIRST + 49;
+  // 2.5.0
+  ME_DO_IDLE = ME_FIRST + 50;
   ME_LAST = ME_FIRST + 255;
 
   MI_GET_FILE_NAME = 256;
@@ -167,6 +175,12 @@ const
   MI_GET_TEXT_COLOR = 272;
   MI_GET_BACK_COLOR = 273;
   MI_GET_INVERT_COLOR = 274;
+  // 2.5.0
+  MI_GET_DWRITE_ENABLED = 275;
+  MI_GET_DWRITE_RENDERING_PARAMS = 276;
+  MI_GET_COLOR_FONT_ENABLED = 277;
+  // 2.5.5
+  MI_GET_GDI_COMPATIBLE = 278;
 
   OVERWRITE_PER_PROP = 0;
   OVERWRITE_INSERT = 1;
@@ -271,8 +285,8 @@ const
   MEID_EDIT_REDO = 2099;
   MEID_EDIT_CUT = 2100;
   MEID_EDIT_COPY = 2101;
-  MEID_EDIT_PASTE = 2102;
-  MEID_EDIT_COPY_QUOTES = 2103;
+  MEID_EDIT_COPY_QUOTES = 2102;
+  MEID_EDIT_PASTE = 2103;
   MEID_EDIT_DELETE = 2104;
   MEID_EDIT_SELECT_ALL = 2105;
   MEID_EDIT_DATE_TIME = 2106;
@@ -348,14 +362,14 @@ const
   MEID_MACROS_CUSTOMIZE = 2176;
   MEID_TOOLS_OPTIONS = 2177;
   MEID_TOOLS_COMPLETION = 2178;
-  MEID_TOOLS_SQL_FORMAT = 2179;
-  MEID_TOOLS_XML_FORMAT = 2180;
+  MEID_TOOLS_HTML_FORMAT = 2179;
+  MEID_TOOLS_SQL_FORMAT = 2180;
   MEID_TOOLS_PLUGIN_CUSTOMIZE = 2181;
   MEID_TOOLS_TOOL_CUSTOMIZE = 2182;
   MEID_TOOLS_TERMINATE_TOOL = 2183;
   MEID_TOOLS_POPUP_MENU_CUSTOMIZE = 2184;
   MEID_WINDOW_ALWAYS_TOP = 2185;
-  MEID_WINDOW_SPLIT = 2186;
+  MEID_WINDOW_SPLIT_HORZ = 2186;
   MEID_WINDOW_NEXT_PANE = 2187;
   MEID_WINDOW_PREV_PANE = 2188;
   MEID_WINDOW_ACTIVE_PANE = 2189;
@@ -380,27 +394,52 @@ const
   MEID_VIEW_RESET_FONT_SIZE = 2205;
   MEID_VIEW_SET_DEFAULT_FONT_SIZE = 2206;
   // 2.4.3
-  EDIT_SPELL_ALL = 2207;
-  EDIT_SPELL_SINGLE_QUOTES = 2208;
-  EDIT_SPELL_DOUBLE_QUOTES = 2209;
-  EDIT_SPELL_COMMENTS = 2210;
-  EDIT_SPELL_SCRIPT = 2211;
-  EDIT_SPELL_TAGS = 2212;
-  EDIT_SPELL_HIGHLIGHT = 2213;
-  EDIT_SPELL_HYPERLINK = 2214;
-  EDIT_SPELL_OTHER = 2215;
+  MEID_EDIT_SPELL_ALL = 2207;
+  MEID_EDIT_SPELL_SINGLE_QUOTES = 2208;
+  MEID_EDIT_SPELL_DOUBLE_QUOTES = 2209;
+  MEID_EDIT_SPELL_COMMENTS = 2210;
+  MEID_EDIT_SPELL_SCRIPT = 2211;
+  MEID_EDIT_SPELL_TAGS = 2212;
+  MEID_EDIT_SPELL_HIGHLIGHT = 2213;
+  MEID_EDIT_SPELL_HYPERLINK = 2214;
+  MEID_EDIT_SPELL_OTHER = 2215;
+  // 2.4.8
+  MEID_REPLACE_IN_FILES = 2216;
+  // 2.5.0
+  MEID_EDIT_CUT_LINE = 2217;
+  MEID_EDIT_COPY_LINE = 2218;
+  MEID_EDIT_DELETE_LINE = 2219;
+  MEID_EDIT_DELETE_RIGHT_LINE = 2220;
+  MEID_EDIT_DELETE_LEFT_LINE = 2221;
+  MEID_EDIT_DELETE_WORD = 2222;
+  MEID_EDIT_DELETE_RIGHT_WORD = 2223;
+  MEID_EDIT_DELETE_LEFT_WORD = 2224;
+  MEID_TOOLS_HTML_CHECK_ERRORS = 2225;
+  MEID_WINDOW_SPLIT_VERT = 2226;
+  // 2.6.1
+  MEID_VIEW_MARKERS_BAR = 2227;
+  MEID_VIEW_SMALL_ICONS = 2228;
+  MEID_VIEW_MEDIUM_ICONS = 2229;
+  MEID_VIEW_LARGE_ICONS = 2230;
+  MEID_VIEW_EXTRA_LARGE_ICONS = 2231;
+  MEID_VIEW_ADD_REMOVE_MARKER = 2232;
+  MEID_VIEW_MARKER_ENABLE_ALL = 2233;
+  MEID_VIEW_MARKER_DISABLE_ALL = 2234;
+  MEID_VIEW_MARKER_DELETE_ALL = 2235;
+  MEID_VIEW_TOGGLE_AUTO_MARKER = 2236;
+  MEID_VIEW_MARKER_CUSTOMIZE = 2237;
 
-  MEID_MY_DICTS = 4096;
-  MEID_MY_MODES = 5120;
-  MEID_MY_MACROS = 6144;
-  MEID_MY_PLUGINS = 7168;
-  MEID_MY_TOOLS = 8192;
+  MEID_DICTS = 4096;
+  MEID_MODES = 5120;
+  MEID_MACROS = 6144;
+  MEID_PLUGINS = 7168;
+  MEID_TOOLS = 8192;
 
 type
   TGetLineInfo = record
-    cch: NativeUInt;
-    flags: NativeUInt;
-    yLine: NativeUInt;
+    cch: Cardinal;
+    flags: Cardinal;
+    yLine: Cardinal;
     byteCrLf: Byte;
   end;
 
@@ -408,21 +447,21 @@ type
 
 type
   TMatchRegExInfo = record
-    cbSize: NativeUInt;
-    nFlags: NativeUInt;
+    cbSize: Cardinal;
+    nFlags: Cardinal;
     pszRegEx: PChar;
     pszText: PChar;
     pszReplace: PChar;
     pszResult: PChar;
-    cchResult: NativeInt;
+    cchResult: Cardinal;
   end;
 
   PMatchRegExInfo = ^TMatchRegExInfo;
 
 type
   TFindRegExInfo = record
-    cbSize: NativeUInt;
-    nFlags: NativeUInt;
+    cbSize: Cardinal;
+    nFlags: Cardinal;
     pszRegEx: PChar;
     pszText: PChar;
     ppszStart: PPChar;
@@ -434,19 +473,19 @@ type
 
 type
   TCustomBarInfo = record
-    cbSize: NativeUInt;
+    cbSize: Cardinal;
     hwndCustomBar: THandle;
     hwndClient: THandle;
     pszTitle: PChar;
-    iPos: NativeInt;
+    iPos: Integer;
   end;
 
   PCustomBarInfo = ^TCustomBarInfo;
 
 type
   TCustomBarCloseInfo = record
-    nID: NativeUInt;
-    iPos: NativeInt;
+    nID: Cardinal;
+    iPos: Integer;
     dwFlags: DWORD;
   end;
 
@@ -454,77 +493,77 @@ type
 
 type
   TToolBarInfo = record
-    cbSize: NativeUInt;
+    cbSize: Cardinal;
     hwndToolBar: THandle;
     hwndClient: THandle;
     pszTitle: PChar;
-    nID: NativeUInt;
-    nFlags: NativeUInt;
+    nID: Cardinal;
+    nFlags: Cardinal;
     bVisible: Boolean;
   end;
 
   PToolBarInfo = ^TToolBarInfo;
 
-function Editor_New(hwnd: THandle): NativeUInt;
-function Editor_GetCmdID(hwnd: THandle; hInstance: THandle): NativeUInt;
-function Editor_QueryStatus(hwnd: THandle; nCmdID: NativeUInt; pbChecked: PBoolean): Boolean;
-function Editor_GetSelText(hwnd: THandle; nBufferSize: NativeUInt; szBuffer: PChar): NativeUInt;
-function Editor_GetLines(hwnd: THandle; nLogical: NativeInt): NativeUInt;
-function Editor_DocGetLines(hwnd: THandle; iDoc: NativeInt; nLogical: NativeInt): NativeUInt;
-function Editor_GetLine(hwnd: THandle; PGetLineInfo: PGetLineInfo; szString: PChar): NativeUInt;
-procedure Editor_GetCaretPos(hwnd: THandle; nLogical: NativeInt; pptPos: PPoint);
+function Editor_New(hwnd: THandle): THandle;
+function Editor_GetCmdID(hwnd: THandle; hInstance: THandle): Cardinal;
+function Editor_QueryStatus(hwnd: THandle; nCmdID: Cardinal; pbChecked: PBoolean): Boolean;
+function Editor_GetSelText(hwnd: THandle; nBufferSize: Cardinal; szBuffer: PChar): Cardinal;
+function Editor_GetLines(hwnd: THandle; nLogical: Integer): Cardinal;
+function Editor_DocGetLines(hwnd: THandle; iDoc: Integer; nLogical: Integer): Cardinal;
+function Editor_GetLine(hwnd: THandle; PGetLineInfo: PGetLineInfo; szString: PChar): Cardinal;
+procedure Editor_GetCaretPos(hwnd: THandle; nLogical: Integer; pptPos: PPoint);
 procedure Editor_GetScrollPos(hwnd: THandle; pptPos: PPoint);
-function Editor_LineFromChar(hwnd: THandle; nLogical: NativeInt; nSerialIndex: NativeUInt): NativeUInt;
-function Editor_LineIndex(hwnd: THandle; bLogical: Boolean; yLine: NativeUInt): NativeUInt;
+function Editor_LineFromChar(hwnd: THandle; nLogical: Integer; nSerialIndex: Cardinal): Cardinal;
+function Editor_LineIndex(hwnd: THandle; bLogical: Boolean; yLine: Cardinal): Cardinal;
 function Editor_LoadFile(hwnd: THandle; bAllowNewWindow: Boolean; szFileName: PChar): Boolean;
-function Editor_LogicalToSerial(hwnd: THandle; pptLogical: PPoint): NativeUInt;
+function Editor_LogicalToSerial(hwnd: THandle; pptLogical: PPoint): Cardinal;
 procedure Editor_LogicalToView(hwnd: THandle; pptLogical, pptView: PPoint);
 function Editor_SaveFile(hwnd: THandle; szFileName: PChar): Boolean;
-function Editor_DocSaveFile(hwnd: THandle; iDoc: NativeInt; szFileName: PChar): Boolean;
-procedure Editor_SerialToLogical(hwnd: THandle; nSerial: NativeUInt; pptLogical: PPoint);
-procedure Editor_SetCaretPos(hwnd: THandle; nLogical: NativeInt; pptPos: PPoint);
-procedure Editor_SetCaretPosEx(hwnd: THandle; nLogical: NativeInt; pptPos: PPoint; bExtend: Boolean);
+function Editor_DocSaveFile(hwnd: THandle; iDoc: Integer; szFileName: PChar): Boolean;
+procedure Editor_SerialToLogical(hwnd: THandle; nSerial: Cardinal; pptLogical: PPoint);
+procedure Editor_SetCaretPos(hwnd: THandle; nLogical: Integer; pptPos: PPoint);
+procedure Editor_SetCaretPosEx(hwnd: THandle; nLogical: Integer; pptPos: PPoint; bExtend: Boolean);
 procedure Editor_SetScrollPos(hwnd: THandle; pptPos: PPoint);
 procedure Editor_ViewToLogical(hwnd: THandle; pptView, pptLogical: PPoint);
-procedure Editor_ExecCommand(hwnd: THandle; nCmdID: NativeUInt);
+procedure Editor_ExecCommand(hwnd: THandle; nCmdID: Cardinal);
 function Editor_GetModified(hwnd: THandle): Boolean;
-function Editor_DocGetModified(hwnd: THandle; iDoc: NativeInt): Boolean;
+function Editor_DocGetModified(hwnd: THandle; iDoc: Integer): Boolean;
 procedure Editor_SetModified(hwnd: THandle; bModified: Boolean);
-procedure Editor_GetSelStart(hwnd: THandle; nLogical: NativeInt; pptPos: PPoint);
-procedure Editor_GetSelEnd(hwnd: THandle; nLogical: NativeInt; pptPos: PPoint);
-procedure Editor_SetSelLength(hwnd: THandle; nLen: NativeUInt);
+procedure Editor_GetSelStart(hwnd: THandle; nLogical: Integer; pptPos: PPoint);
+procedure Editor_GetSelEnd(hwnd: THandle; nLogical: Integer; pptPos: PPoint);
+procedure Editor_SetSelLength(hwnd: THandle; nLen: Cardinal);
 procedure Editor_GetMode(hwnd: THandle; szModeName: PChar);
-procedure Editor_DocGetMode(hwnd: THandle; iDoc: NativeInt; szModeName: PChar);
+procedure Editor_DocGetMode(hwnd: THandle; iDoc: Integer; szModeName: PChar);
 procedure Editor_SetMode(hwnd: THandle; szModeName: PChar);
-procedure Editor_DocSetMode(hwnd: THandle; iDoc: NativeInt; szModeName: PChar);
+procedure Editor_DocSetMode(hwnd: THandle; iDoc: Integer; szModeName: PChar);
 procedure Editor_EmptyUndoBuffer(hwnd: THandle);
 procedure Editor_InsertString(hwnd: THandle; szString: PChar);
 procedure Editor_Insert(hwnd: THandle; szString: PChar);
 procedure Editor_Overwrite(hwnd: THandle; szString: PChar);
 procedure Editor_SetSelView(hwnd: THandle; pptSelStart, pptSelEnd: PPoint);
-function Editor_Find(hwnd: THandle; nFlags: NativeUInt; szFind: PChar): Boolean;
-function Editor_Replace(hwnd: THandle; nFlags: NativeUInt; szFindReplace: PChar): Boolean;
+function Editor_Find(hwnd: THandle; nFlags: Cardinal; szFind: PChar): Boolean;
+function Editor_Replace(hwnd: THandle; nFlags: Cardinal; szFindReplace: PChar): Boolean;
 procedure Editor_SetStatus(hwnd: THandle; szStatus: PChar);
-function Editor_Convert(hwnd: THandle; nFlags: NativeUInt): Boolean;
-function Editor_GetMargin(hwnd: THandle): NativeUInt;
-function Editor_GetVersion(hwnd: THandle): NativeUInt;
-function Editor_GetVersionEx(hwnd: THandle; pnProductType: NativeUInt): NativeUInt;
+function Editor_Convert(hwnd: THandle; nFlags: Cardinal): Boolean;
+function Editor_GetMargin(hwnd: THandle): Cardinal;
+function Editor_GetVersion(hwnd: THandle): Cardinal;
 procedure Editor_Redraw(hwnd: THandle; bRedraw: Boolean);
-function Editor_GetSelType(hwnd: THandle): NativeInt;
-function Editor_IsCharHalfOrFull(hwnd: THandle; ch: Char): NativeInt;
-function Editor_Info(hwnd: THandle; nCmd: WPARAM; lParam: LPARAM): NativeInt;
-function Editor_DocInfo(hwnd: THandle; iDoc: NativeInt; nCmd: WPARAM; lParam: LPARAM): NativeInt;
-function Editor_GetStatus(hwnd: THandle; szStatus: PChar; nBufferSize: NativeUInt): NativeUInt;
-function Editor_CustomBarOpen(hwnd: THandle; PCustomBarInfo: PCustomBarInfo): NativeUInt;
-function Editor_CustomBarClose(hwnd: THandle; nCustomBarID: NativeUInt): Boolean;
+function Editor_GetSelType(hwnd: THandle): Integer;
+function Editor_IsCharHalfOrFull(hwnd: THandle; ch: Char): Integer;
+function Editor_Info(hwnd: THandle; nCmd: WPARAM; lParam: LPARAM): LRESULT;
+function Editor_DocInfo(hwnd: THandle; iDoc: Integer; nCmd: WPARAM; lParam: LPARAM): LRESULT;
+function Editor_GetStatus(hwnd: THandle; szStatus: PChar; nBufferSize: Cardinal): Cardinal;
+function Editor_CustomBarOpen(hwnd: THandle; PCustomBarInfo: PCustomBarInfo): Cardinal;
+function Editor_CustomBarClose(hwnd: THandle; nCustomBarID: Cardinal): Boolean;
 function Editor_MatchRegEx(hwnd: THandle; PMatchRegExInfo: PMatchRegExInfo): Boolean;
 function Editor_FindRegEx(hwnd: THandle; PFindRegExInfo: PFindRegExInfo): Boolean;
-function Editor_EnumMode(hwnd: THandle; pBuf: PChar; cchBuf: NativeUInt): NativeUInt;
-function Editor_ToolBarOpen(hwnd: THandle; PToolBarInfo: PToolBarInfo): NativeUInt;
-function Editor_ToolBarClose(hwnd: THandle; nToolBarID: NativeUInt): Boolean;
-function Editor_ToolBarShow(hwnd: THandle; nToolBarID: NativeUInt; bVisible: Boolean): Boolean;
-function Editor_OutputString(hwnd: THandle; szString: PChar; nFlags: NativeUInt): Boolean;
-function Editor_GetOutputString(hwnd: THandle; cchBuf: NativeUInt; pBuf: PChar): NativeUInt;
+function Editor_EnumMode(hwnd: THandle; pBuf: PChar; cchBuf: Cardinal): Cardinal;
+function Editor_ToolBarOpen(hwnd: THandle; PToolBarInfo: PToolBarInfo): Cardinal;
+function Editor_ToolBarClose(hwnd: THandle; nToolBarID: Cardinal): Boolean;
+function Editor_ToolBarShow(hwnd: THandle; nToolBarID: Cardinal; bVisible: Boolean): Boolean;
+function Editor_OutputString(hwnd: THandle; szString: PChar; nFlags: Cardinal): Boolean;
+function Editor_GetOutputString(hwnd: THandle; cchBuf: Cardinal; pBuf: PChar): Cardinal;
+procedure Editor_DoIdle(hwnd: THandle);
 
 implementation
 
@@ -536,9 +575,9 @@ implementation
 // 戻り値
 //   ウィンドウのハンドル
 
-function Editor_New(hwnd: THandle): NativeUInt;
+function Editor_New(hwnd: THandle): THandle;
 begin
-  Result := SendMessage(hwnd, ME_NEW, 0, 0);
+  Result := THandle(SendMessage(hwnd, ME_NEW, 0, 0));
 end;
 
 // -----------------------------------------------------------------------------
@@ -550,9 +589,9 @@ end;
 // 戻り値
 //   プラグインを実行するためのコマンドID
 
-function Editor_GetCmdID(hwnd: THandle; hInstance: THandle): NativeUInt;
+function Editor_GetCmdID(hwnd: THandle; hInstance: THandle): Cardinal;
 begin
-  Result := SendMessage(hwnd, ME_GET_CMD_ID, 0, hInstance);
+  Result := Cardinal(SendMessage(hwnd, ME_GET_CMD_ID, 0, hInstance));
 end;
 
 // -----------------------------------------------------------------------------
@@ -565,7 +604,7 @@ end;
 // 戻り値
 //   実行可能であればTrueを返します
 
-function Editor_QueryStatus(hwnd: THandle; nCmdID: NativeUInt; pbChecked: PBoolean): Boolean;
+function Editor_QueryStatus(hwnd: THandle; nCmdID: Cardinal; pbChecked: PBoolean): Boolean;
 begin
   Result := Boolean(SendMessage(hwnd, ME_QUERY_STATUS, WPARAM(nCmdID), LPARAM(pbChecked)));
 end;
@@ -580,9 +619,9 @@ end;
 // 戻り値
 //   nBufferSizeが0の場合はバッファに必要なサイズ、0以外の場合は使用されません
 
-function Editor_GetSelText(hwnd: THandle; nBufferSize: NativeUInt; szBuffer: PChar): NativeUInt;
+function Editor_GetSelText(hwnd: THandle; nBufferSize: Cardinal; szBuffer: PChar): Cardinal;
 begin
-  Result := SendMessage(hwnd, ME_GET_SEL_TEXT, WPARAM(nBufferSize), LPARAM(szBuffer));
+  Result := Cardinal(SendMessage(hwnd, ME_GET_SEL_TEXT, WPARAM(nBufferSize), LPARAM(szBuffer)));
 end;
 
 // -----------------------------------------------------------------------------
@@ -594,9 +633,9 @@ end;
 // 戻り値
 //   文書の行数を返します
 
-function Editor_GetLines(hwnd: THandle; nLogical: NativeInt): NativeUInt;
+function Editor_GetLines(hwnd: THandle; nLogical: Integer): Cardinal;
 begin
-  Result := SendMessage(hwnd, ME_GET_LINES, WPARAM(nLogical), 0);
+  Result := Cardinal(SendMessage(hwnd, ME_GET_LINES, WPARAM(nLogical), 0));
 end;
 
 // -----------------------------------------------------------------------------
@@ -609,9 +648,9 @@ end;
 // 戻り値
 //   文書の行数を返します
 
-function Editor_DocGetLines(hwnd: THandle; iDoc: NativeInt; nLogical: NativeInt): NativeUInt;
+function Editor_DocGetLines(hwnd: THandle; iDoc: Integer; nLogical: Integer): Cardinal;
 begin
-  Result := SendMessage(hwnd, ME_GET_LINES, MakeWParam(nLogical, iDoc + 1), 0);
+  Result := Cardinal(SendMessage(hwnd, ME_GET_LINES, MakeWParam(nLogical, iDoc + 1), 0));
 end;
 
 // -----------------------------------------------------------------------------
@@ -624,9 +663,9 @@ end;
 // 戻り値
 //   pGetLineInfo->cchが0の場合はバッファに必要なサイズ、0以外の場合は使用されません
 
-function Editor_GetLine(hwnd: THandle; PGetLineInfo: PGetLineInfo; szString: PChar): NativeUInt;
+function Editor_GetLine(hwnd: THandle; PGetLineInfo: PGetLineInfo; szString: PChar): Cardinal;
 begin
-  Result := SendMessage(hwnd, ME_GET_LINE, WPARAM(PGetLineInfo), LPARAM(szString));
+  Result := Cardinal(SendMessage(hwnd, ME_GET_LINE, WPARAM(PGetLineInfo), LPARAM(szString)));
 end;
 
 // -----------------------------------------------------------------------------
@@ -639,7 +678,7 @@ end;
 // 戻り値
 //   使用されません
 
-procedure Editor_GetCaretPos(hwnd: THandle; nLogical: NativeInt; pptPos: PPoint);
+procedure Editor_GetCaretPos(hwnd: THandle; nLogical: Integer; pptPos: PPoint);
 begin
   SendMessage(hwnd, ME_GET_CARET_POS, WPARAM(nLogical), LPARAM(pptPos));
 end;
@@ -668,9 +707,9 @@ end;
 // 戻り値
 //   行番号を返します
 
-function Editor_LineFromChar(hwnd: THandle; nLogical: NativeInt; nSerialIndex: NativeUInt): NativeUInt;
+function Editor_LineFromChar(hwnd: THandle; nLogical: Integer; nSerialIndex: Cardinal): Cardinal;
 begin
-  Result := SendMessage(hwnd, ME_LINE_FROM_CHAR, WPARAM(nLogical), LPARAM(nSerialIndex));
+  Result := Cardinal(SendMessage(hwnd, ME_LINE_FROM_CHAR, WPARAM(nLogical), LPARAM(nSerialIndex)));
 end;
 
 // -----------------------------------------------------------------------------
@@ -683,9 +722,9 @@ end;
 // 戻り値
 //   シリアル位置を返します
 
-function Editor_LineIndex(hwnd: THandle; bLogical: Boolean; yLine: NativeUInt): NativeUInt;
+function Editor_LineIndex(hwnd: THandle; bLogical: Boolean; yLine: Cardinal): Cardinal;
 begin
-  Result := SendMessage(hwnd, ME_LINE_INDEX, WPARAM(bLogical), LPARAM(yLine));
+  Result := Cardinal(SendMessage(hwnd, ME_LINE_INDEX, WPARAM(bLogical), LPARAM(yLine)));
 end;
 
 // -----------------------------------------------------------------------------
@@ -712,9 +751,9 @@ end;
 // 戻り値
 //   シリアル位置を返します
 
-function Editor_LogicalToSerial(hwnd: THandle; pptLogical: PPoint): NativeUInt;
+function Editor_LogicalToSerial(hwnd: THandle; pptLogical: PPoint): Cardinal;
 begin
-  Result := SendMessage(hwnd, ME_LOGICAL_TO_SERIAL, 0, LPARAM(pptLogical));
+  Result := Cardinal(SendMessage(hwnd, ME_LOGICAL_TO_SERIAL, 0, LPARAM(pptLogical)));
 end;
 
 // -----------------------------------------------------------------------------
@@ -756,7 +795,7 @@ end;
 // 戻り値
 //   成功するとTrueを返します
 
-function Editor_DocSaveFile(hwnd: THandle; iDoc: NativeInt; szFileName: PChar): Boolean;
+function Editor_DocSaveFile(hwnd: THandle; iDoc: Integer; szFileName: PChar): Boolean;
 begin
   Result := Boolean(SendMessage(hwnd, ME_SAVE_FILE, MakeWParam(0, iDoc + 1), LPARAM(szFileName)));
 end;
@@ -771,7 +810,7 @@ end;
 // 戻り値
 //   使用されません
 
-procedure Editor_SerialToLogical(hwnd: THandle; nSerial: NativeUInt; pptLogical: PPoint);
+procedure Editor_SerialToLogical(hwnd: THandle; nSerial: Cardinal; pptLogical: PPoint);
 begin
   SendMessage(hwnd, ME_SERIAL_TO_LOGICAL, WPARAM(nSerial), LPARAM(pptLogical));
 end;
@@ -786,9 +825,9 @@ end;
 // 戻り値
 //   使用されません
 
-procedure Editor_SetCaretPos(hwnd: THandle; nLogical: NativeInt; pptPos: PPoint);
+procedure Editor_SetCaretPos(hwnd: THandle; nLogical: Integer; pptPos: PPoint);
 begin
-  SendMessage(hwnd, ME_SET_CARET_POS, MakeWParam(nLogical, NativeUInt(False)), LPARAM(pptPos));
+  SendMessage(hwnd, ME_SET_CARET_POS, MakeWParam(nLogical, Cardinal(False)), LPARAM(pptPos));
 end;
 
 // -----------------------------------------------------------------------------
@@ -802,9 +841,9 @@ end;
 // 戻り値
 //   使用されません
 
-procedure Editor_SetCaretPosEx(hwnd: THandle; nLogical: NativeInt; pptPos: PPoint; bExtend: Boolean);
+procedure Editor_SetCaretPosEx(hwnd: THandle; nLogical: Integer; pptPos: PPoint; bExtend: Boolean);
 begin
-  SendMessage(hwnd, ME_SET_CARET_POS, MakeWParam(nLogical, NativeUInt(bExtend)), LPARAM(pptPos));
+  SendMessage(hwnd, ME_SET_CARET_POS, MakeWParam(nLogical, Cardinal(bExtend)), LPARAM(pptPos));
 end;
 
 // -----------------------------------------------------------------------------
@@ -845,7 +884,7 @@ end;
 // 戻り値
 //   使用されません
 
-procedure Editor_ExecCommand(hwnd: THandle; nCmdID: NativeUInt);
+procedure Editor_ExecCommand(hwnd: THandle; nCmdID: Cardinal);
 begin
   SendMessage(hwnd, ME_EXEC_COMMAND, WPARAM(nCmdID), 0);
 end;
@@ -872,7 +911,7 @@ end;
 // 戻り値
 //   更新されている場合はTrueを返します
 
-function Editor_DocGetModified(hwnd: THandle; iDoc: NativeInt): Boolean;
+function Editor_DocGetModified(hwnd: THandle; iDoc: Integer): Boolean;
 begin
   Result := Boolean(SendMessage(hwnd, ME_GET_MODIFIED, MakeWParam(0, iDoc + 1), 0));
 end;
@@ -901,7 +940,7 @@ end;
 // 戻り値
 //   使用されません
 
-procedure Editor_GetSelStart(hwnd: THandle; nLogical: NativeInt; pptPos: PPoint);
+procedure Editor_GetSelStart(hwnd: THandle; nLogical: Integer; pptPos: PPoint);
 begin
   SendMessage(hwnd, ME_GET_SEL_START, WPARAM(nLogical), LPARAM(pptPos));
 end;
@@ -916,7 +955,7 @@ end;
 // 戻り値
 //   使用されません
 
-procedure Editor_GetSelEnd(hwnd: THandle; nLogical: NativeInt; pptPos: PPoint);
+procedure Editor_GetSelEnd(hwnd: THandle; nLogical: Integer; pptPos: PPoint);
 begin
   SendMessage(hwnd, ME_GET_SEL_END, WPARAM(nLogical), LPARAM(pptPos));
 end;
@@ -930,7 +969,7 @@ end;
 // 戻り値
 //   使用されません
 
-procedure Editor_SetSelLength(hwnd: THandle; nLen: NativeUInt);
+procedure Editor_SetSelLength(hwnd: THandle; nLen: Cardinal);
 begin
   SendMessage(hwnd, ME_SET_SEL_LENGTH, WPARAM(nLen), 0);
 end;
@@ -959,7 +998,7 @@ end;
 // 戻り値
 //   使用されません
 
-procedure Editor_DocGetMode(hwnd: THandle; iDoc: NativeInt; szModeName: PChar);
+procedure Editor_DocGetMode(hwnd: THandle; iDoc: Integer; szModeName: PChar);
 begin
   SendMessage(hwnd, ME_GET_MODE, MakeWParam(0, iDoc + 1), LPARAM(szModeName));
 end;
@@ -988,7 +1027,7 @@ end;
 // 戻り値
 //   使用されません
 
-procedure Editor_DocSetMode(hwnd: THandle; iDoc: NativeInt; szModeName: PChar);
+procedure Editor_DocSetMode(hwnd: THandle; iDoc: Integer; szModeName: PChar);
 begin
   SendMessage(hwnd, ME_SET_MODE, MakeWParam(0, iDoc + 1), LPARAM(szModeName));
 end;
@@ -1079,7 +1118,7 @@ end;
 //   FLAG_FIND_AROUND:    文末まで検索したら文頭に移動します
 //   FLAG_FIND_REG_EXP:   正規表現を使用します
 
-function Editor_Find(hwnd: THandle; nFlags: NativeUInt; szFind: PChar): Boolean;
+function Editor_Find(hwnd: THandle; nFlags: Cardinal; szFind: PChar): Boolean;
 begin
   Result := Boolean(SendMessage(hwnd, ME_FIND, WPARAM(nFlags), LPARAM(szFind)));
 end;
@@ -1099,7 +1138,7 @@ end;
 //   FLAG_FIND_REG_EXP:     正規表現を使用します
 //   FLAG_REPLACE_SEL_ONLY: 選択した範囲のみを対象とします
 
-function Editor_Replace(hwnd: THandle; nFlags: NativeUInt; szFindReplace: PChar): Boolean;
+function Editor_Replace(hwnd: THandle; nFlags: Cardinal; szFindReplace: PChar): Boolean;
 begin
   Result := Boolean(SendMessage(hwnd, ME_REPLACE, WPARAM(nFlags), LPARAM(szFindReplace)));
 end;
@@ -1133,7 +1172,7 @@ end;
 //   FLAG_ZEN_TO_HAN:         半角に変換します
 //   FLAG_CONVERT_SELECT_ALL: 文書全体を対象とします
 
-function Editor_Convert(hwnd: THandle; nFlags: NativeUInt): Boolean;
+function Editor_Convert(hwnd: THandle; nFlags: Cardinal): Boolean;
 begin
   Result := Boolean(SendMessage(hwnd, ME_CONVERT, WPARAM(nFlags), 0));
 end;
@@ -1146,9 +1185,9 @@ end;
 // 戻り値
 //   折り返し桁数を返します
 
-function Editor_GetMargin(hwnd: THandle): NativeUInt;
+function Editor_GetMargin(hwnd: THandle): Cardinal;
 begin
-  Result := SendMessage(hwnd, ME_GET_MARGIN, 0, 0);
+  Result := Cardinal(SendMessage(hwnd, ME_GET_MARGIN, 0, 0));
 end;
 
 // -----------------------------------------------------------------------------
@@ -1159,18 +1198,9 @@ end;
 // 戻り値
 //   バージョン番号を返します
 
-function Editor_GetVersion(hwnd: THandle): NativeUInt;
+function Editor_GetVersion(hwnd: THandle): Cardinal;
 begin
-  Result := SendMessage(hwnd, ME_GET_VERSION, 0, 0);
-end;
-
-// -----------------------------------------------------------------------------
-// Editor_GetVersionEx
-//   実装していません
-
-function Editor_GetVersionEx(hwnd: THandle; pnProductType: NativeUInt): NativeUInt;
-begin
-  Result := SendMessage(hwnd, ME_GET_VERSION, WPARAM(pnProductType), 0);
+  Result := Cardinal(SendMessage(hwnd, ME_GET_VERSION, 0, 0));
 end;
 
 // -----------------------------------------------------------------------------
@@ -1197,9 +1227,9 @@ end;
 //   SEL_TYPE_CHAR: 通常選択されています
 //   SEL_TYPE_BOX:  矩形選択されています
 
-function Editor_GetSelType(hwnd: THandle): NativeInt;
+function Editor_GetSelType(hwnd: THandle): Integer;
 begin
-  Result := SendMessage(hwnd, ME_GET_SEL_TYPE, 0, 0);
+  Result := Integer(SendMessage(hwnd, ME_GET_SEL_TYPE, 0, 0));
 end;
 
 // -----------------------------------------------------------------------------
@@ -1211,9 +1241,9 @@ end;
 // 戻り値
 //   半角の場合は1、全角の場合は2を返します
 
-function Editor_IsCharHalfOrFull(hwnd: THandle; ch: Char): NativeInt;
+function Editor_IsCharHalfOrFull(hwnd: THandle; ch: Char): Integer;
 begin
-  Result := SendMessage(hwnd, ME_IS_CHAR_HALF_OR_FULL, WPARAM(ch), 0);
+  Result := Integer(SendMessage(hwnd, ME_IS_CHAR_HALF_OR_FULL, WPARAM(ch), 0));
 end;
 
 // -----------------------------------------------------------------------------
@@ -1244,9 +1274,9 @@ end;
 //   MI_GET_TEXT_COLOR:     文字の色を取得します
 //   MI_GET_BACK_COLOR:     背景の色を取得します
 
-function Editor_Info(hwnd: THandle; nCmd: WPARAM; lParam: LPARAM): NativeInt;
+function Editor_Info(hwnd: THandle; nCmd: WPARAM; lParam: LPARAM): LRESULT;
 begin
-  Result := SendMessage(hwnd, ME_INFO, nCmd, lParam);
+  Result := LRESULT(SendMessage(hwnd, ME_INFO, nCmd, lParam));
 end;
 
 // -----------------------------------------------------------------------------
@@ -1278,9 +1308,9 @@ end;
 //   MI_GET_TEXT_COLOR:     文字の色を取得します
 //   MI_GET_BACK_COLOR:     背景の色を取得します
 
-function Editor_DocInfo(hwnd: THandle; iDoc: NativeInt; nCmd: WPARAM; lParam: LPARAM): NativeInt;
+function Editor_DocInfo(hwnd: THandle; iDoc: Integer; nCmd: WPARAM; lParam: LPARAM): LRESULT;
 begin
-  Result := SendMessage(hwnd, ME_INFO, MakeWParam(nCmd, iDoc + 1), lParam);
+  Result := LRESULT(SendMessage(hwnd, ME_INFO, MakeWParam(nCmd, iDoc + 1), lParam));
 end;
 
 // -----------------------------------------------------------------------------
@@ -1293,9 +1323,9 @@ end;
 // 戻り値
 //   文字列を取得するのに必要なバッファのサイズ
 
-function Editor_GetStatus(hwnd: THandle; szStatus: PChar; nBufferSize: NativeUInt): NativeUInt;
+function Editor_GetStatus(hwnd: THandle; szStatus: PChar; nBufferSize: Cardinal): Cardinal;
 begin
-  Result := SendMessage(hwnd, ME_GET_STATUS, WPARAM(nBufferSize), LPARAM(nBufferSize));
+  Result := Cardinal(SendMessage(hwnd, ME_GET_STATUS, WPARAM(nBufferSize), LPARAM(nBufferSize)));
 end;
 
 // -----------------------------------------------------------------------------
@@ -1307,9 +1337,9 @@ end;
 // 戻り値
 //   成功するとカスタムバーのIDを返します
 
-function Editor_CustomBarOpen(hwnd: THandle; PCustomBarInfo: PCustomBarInfo): NativeUInt;
+function Editor_CustomBarOpen(hwnd: THandle; PCustomBarInfo: PCustomBarInfo): Cardinal;
 begin
-  Result := SendMessage(hwnd, ME_CUSTOM_BAR_OPEN, 0, LPARAM(PCustomBarInfo));
+  Result := Cardinal(SendMessage(hwnd, ME_CUSTOM_BAR_OPEN, 0, LPARAM(PCustomBarInfo)));
 end;
 
 // -----------------------------------------------------------------------------
@@ -1321,7 +1351,7 @@ end;
 // 戻り値
 //   使用されません
 
-function Editor_CustomBarClose(hwnd: THandle; nCustomBarID: NativeUInt): Boolean;
+function Editor_CustomBarClose(hwnd: THandle; nCustomBarID: Cardinal): Boolean;
 begin
   Result := Boolean(SendMessage(hwnd, ME_CUSTOM_BAR_CLOSE, WPARAM(nCustomBarID), 0));
 end;
@@ -1364,9 +1394,9 @@ end;
 // 戻り値
 //   cchBufが0の場合はバッファに必要なサイズ、0以外の場合は使用されません
 
-function Editor_EnumMode(hwnd: THandle; pBuf: PChar; cchBuf: NativeUInt): NativeUInt;
+function Editor_EnumMode(hwnd: THandle; pBuf: PChar; cchBuf: Cardinal): Cardinal;
 begin
-  Result := SendMessage(hwnd, ME_ENUM_MODE, WPARAM(cchBuf), LPARAM(pBuf));
+  Result := Cardinal(SendMessage(hwnd, ME_ENUM_MODE, WPARAM(cchBuf), LPARAM(pBuf)));
 end;
 
 // -----------------------------------------------------------------------------
@@ -1378,9 +1408,9 @@ end;
 // 戻り値
 //   成功するとツールバーのIDを返します
 
-function Editor_ToolBarOpen(hwnd: THandle; PToolBarInfo: PToolBarInfo): NativeUInt;
+function Editor_ToolBarOpen(hwnd: THandle; PToolBarInfo: PToolBarInfo): Cardinal;
 begin
-  Result := SendMessage(hwnd, ME_TOOL_BAR_OPEN, 0, LPARAM(PToolBarInfo));
+  Result := Cardinal(SendMessage(hwnd, ME_TOOL_BAR_OPEN, 0, LPARAM(PToolBarInfo)));
 end;
 
 // -----------------------------------------------------------------------------
@@ -1392,7 +1422,7 @@ end;
 // 戻り値
 //   使用されません
 
-function Editor_ToolBarClose(hwnd: THandle; nToolBarID: NativeUInt): Boolean;
+function Editor_ToolBarClose(hwnd: THandle; nToolBarID: Cardinal): Boolean;
 begin
   Result := Boolean(SendMessage(hwnd, ME_TOOL_BAR_CLOSE, WPARAM(nToolBarID), 0));
 end;
@@ -1407,7 +1437,7 @@ end;
 // 戻り値
 //   使用されません
 
-function Editor_ToolBarShow(hwnd: THandle; nToolBarID: NativeUInt; bVisible: Boolean): Boolean;
+function Editor_ToolBarShow(hwnd: THandle; nToolBarID: Cardinal; bVisible: Boolean): Boolean;
 begin
   Result := Boolean(SendMessage(hwnd, ME_TOOL_BAR_SHOW, WPARAM(nToolBarID), LPARAM(bVisible)));
 end;
@@ -1427,7 +1457,7 @@ end;
 //   FLAG_FOCUS_OUTPUT: アウトプットバーにフォーカスを設定します
 //   FLAG_CLEAR_OUTPUT: アウトプットバの文字列をクリアします
 
-function Editor_OutputString(hwnd: THandle; szString: PChar; nFlags: NativeUInt): Boolean;
+function Editor_OutputString(hwnd: THandle; szString: PChar; nFlags: Cardinal): Boolean;
 begin
   Result := Boolean(SendMessage(hwnd, ME_OUTPUT_STRING, WPARAM(nFlags), LPARAM(szString)));
 end;
@@ -1442,9 +1472,22 @@ end;
 // 戻り値
 //   cchBufが0の場合はバッファに必要なサイズ、0以外の場合は使用されません
 
-function Editor_GetOutputString(hwnd: THandle; cchBuf: NativeUInt; pBuf: PChar): NativeUInt;
+function Editor_GetOutputString(hwnd: THandle; cchBuf: Cardinal; pBuf: PChar): Cardinal;
 begin
-  Result := SendMessage(hwnd, ME_GET_OUTPUT_STRING, WPARAM(cchBuf), LPARAM(pBuf));
+  Result := Cardinal(SendMessage(hwnd, ME_GET_OUTPUT_STRING, WPARAM(cchBuf), LPARAM(pBuf)));
+end;
+
+// -----------------------------------------------------------------------------
+// Editor_DoIdle
+//   表示更新を行います
+// パラメータ
+//   hwnd: ウィンドウのハンドル
+// 戻り値
+//   使用されません
+
+procedure Editor_DoIdle(hwnd: THandle);
+begin
+  SendMessage(hwnd, ME_DO_IDLE, 0, 0);
 end;
 
 end.

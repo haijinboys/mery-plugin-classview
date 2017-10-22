@@ -39,7 +39,7 @@ implementation
 function IsDriveReady(C: Char): Boolean;
 var
   W: Word;
-  SR: TSearchRec;
+  LRec: TSearchRec;
 begin
   if C = '\' then
   begin
@@ -52,9 +52,9 @@ begin
     Result := DiskSize(Ord(C) - $40) <> -1;
     if Result and (GetDriveType(PChar(string(C + ':\'))) in [DRIVE_REMOTE, DRIVE_CDROM]) then
       try
-        Result := FindFirst(C + ':\*.*', $3F, SR) = 0;
+        Result := FindFirst(C + ':\*.*', $3F, LRec) = 0;
       finally
-        FindClose(SR);
+        FindClose(LRec);
       end;
   finally
     SetErrorMode(W);
