@@ -10,12 +10,16 @@ interface
 uses
 {$IF CompilerVersion > 22.9}
   Winapi.Windows, Winapi.Messages, System.SysUtils, System.Classes,
-  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Winapi.MultiMon, Winapi.ShellScaling;
+  Vcl.Graphics, Vcl.Controls, Vcl.Forms, Winapi.MultiMon, Winapi.ShellScaling,
+  Winapi.UxTheme;
 {$ELSE}
   Windows, Messages, SysUtils, Classes, Graphics, Controls, Forms, MultiMon,
-  ShellScaling;
+  ShellScaling, UxTheme;
 {$IFEND}
 
+
+const
+  themelib = 'uxtheme.dll';
 
 const
   WM_DPICHANGED = $02E0;
@@ -46,6 +50,7 @@ type
     FOnBeforeMonitorDpiChanged: TMonitorDpiChangedEvent;
   protected
     { Protected éŒ¾ }
+    function GetSystemMetrics(nIndex: Integer): Integer;
     procedure WMDpiChanged(var Message: TWMDpi); message WM_DPICHANGED;
     procedure WMNCCreate(var Message: TWMNCCreate); message WM_NCCREATE;
   public
@@ -69,16 +74,26 @@ type
     class property DefaultFont: TFont read FDefaultFont write SetDefaultFont;
   end;
 
-function EnableNonClientDpiScaling(hWnd: HWND): BOOL; stdcall;
+function EnableNonClientDpiScaling(hwnd: HWND): BOOL; stdcall;
+function GetSystemMetricsForDpi(nIndex: Integer; dpi: UINT): Integer; stdcall;
+function OpenThemeDataForDpi(hwnd: HWND; pszClassList: LPCWSTR; dpi: UINT): HTHEME; stdcall;
 
 implementation
 
 { TCustomScaledForm }
 
+function TCustomScaledForm.GetSystemMetrics(nIndex: Integer): Integer;
+begin
+  if CheckWin32Version(10) and ({$IF CompilerVersion > 22.9}TOSVersion.Build{$ELSE}Win32BuildNumber{$IFEND} >= 14393) then
+    Result := GetSystemMetricsForDpi(nIndex, PixelsPerInch)
+  else
+    Result := {$IF CompilerVersion > 22.9}Winapi.{$IFEND}Windows.GetSystemMetrics(nIndex);
+end;
+
 procedure TCustomScaledForm.WMDpiChanged(var Message: TWMDpi);
 var
   Y: Integer;
-  OldPPI: Integer;
+  LPixelsPerInch: Integer;
 begin
   if not(csDesigning in ComponentState) then
   begin
@@ -93,34 +108,34 @@ begin
     begin
       if Assigned(FOnBeforeMonitorDpiChanged) then
         FOnBeforeMonitorDpiChanged(Self, PixelsPerInch, Message.YDpi);
+      LPixelsPerInch := PixelsPerInch;
+      PixelsPerInch := Message.YDpi;
       if not Visible then
       begin
         Y := Height - ClientHeight;
-        ChangeScale(Message.YDpi, PixelsPerInch);
+        ChangeScale(Message.YDpi, LPixelsPerInch);
         with Constraints do
         begin
           if MinHeight > 0 then
-            MinHeight := MinHeight + Y - MulDiv(Y, Message.YDpi, PixelsPerInch);
+            MinHeight := MinHeight + Y - MulDiv(Y, Message.YDpi, LPixelsPerInch);
           if MaxHeight > 0 then
-            MaxHeight := MaxHeight + Y - MulDiv(Y, Message.YDpi, PixelsPerInch);
+            MaxHeight := MaxHeight + Y - MulDiv(Y, Message.YDpi, LPixelsPerInch);
         end;
       end
       else
       begin
-        if Message.YDpi < PixelsPerInch then
-          ScaleConstraints(Message.YDpi, PixelsPerInch);
+        if Message.YDpi < LPixelsPerInch then
+          ScaleConstraints(Message.YDpi, LPixelsPerInch);
         with Message.ScalledRect^ do
           SetWindowPos(Self.Handle, 0, Left, Top, Right - Left, Bottom - Top, SWP_NOZORDER or SWP_NOOWNERZORDER or SWP_NOACTIVATE);
-        ScaleControls(Message.YDpi, PixelsPerInch);
-        Font.Height := MulDiv(Font.Height, Message.YDpi, PixelsPerInch);
-        if Message.YDpi > PixelsPerInch then
-          ScaleConstraints(Message.YDpi, PixelsPerInch);
+        ScaleControls(Message.YDpi, LPixelsPerInch);
+        Font.Height := MulDiv(Font.Height, Message.YDpi, LPixelsPerInch);
+        if Message.YDpi > LPixelsPerInch then
+          ScaleConstraints(Message.YDpi, LPixelsPerInch);
       end;
       Resize;
-      OldPPI := PixelsPerInch;
-      PixelsPerInch := Message.YDpi;
       if Assigned(FOnAfterMonitorDpiChanged) then
-        FOnAfterMonitorDpiChanged(Self, OldPPI, PixelsPerInch);
+        FOnAfterMonitorDpiChanged(Self, LPixelsPerInch, Message.YDpi);
     end;
     Message.Result := 0;
   end;
@@ -129,9 +144,9 @@ end;
 procedure TCustomScaledForm.WMNCCreate(var Message: TWMNCCreate);
 begin
 {$IF CompilerVersion > 22.9}
-  if CheckWin32Version(10) and (TOSVersion.Build >= 14393) then
+  if CheckWin32Version(10) and (TOSVersion.Build >= 14393) and (TOSVersion.Build < 15063) then
 {$ELSE}
-  if CheckWin32Version(10) and (Win32BuildNumber >= 14393) then
+  if CheckWin32Version(10) and (Win32BuildNumber >= 14393) and (Win32BuildNumber < 15063) then
 {$IFEND}
     EnableNonClientDpiScaling(Self.Handle);
   inherited;
@@ -179,5 +194,7 @@ begin
 end;
 
 function EnableNonClientDpiScaling; external user32 name 'EnableNonClientDpiScaling' delayed;
+function GetSystemMetricsForDpi(nIndex: Integer; dpi: UINT): Integer; stdcall; external user32 name 'GetSystemMetricsForDpi' delayed;
+function OpenThemeDataForDpi; external themelib name 'OpenThemeDataForDpi' delayed;
 
 end.

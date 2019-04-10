@@ -14,7 +14,7 @@ www:    https://www.haijin-boys.com/
 
 ● 動作環境
 
-	対応OS: Windows 10, 8, 7, Vista, XP (32 ビット, 64 ビット)
+	対応OS: Windows 10, 8, 7, Vista, XP
 	その他: Mery 2.2.0 以降がインストールされている環境
 
 ● インストール
@@ -65,6 +65,15 @@ www:    https://www.haijin-boys.com/
 	さっている皆様に感謝いたします。
 
 ● 更新履歴
+
+	▼ 2018/10/13 (2.3.3)
+
+		PerMonitorV2 に対応。
+		(Windows 10 Creators Update [バージョン: 1703 ビルド: 15063] 以降が必要)
+
+	▼ 2017/10/23 (2.3.2)
+
+		64ビット版に対応。
 
 	▼ 2017/05/28 (2.3.1)
 

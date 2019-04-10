@@ -119,7 +119,7 @@ begin
   if not FileExists2(ParamStr(0)) then
     Exit;
   FileName := ChangeFileExt(ParamStr(0), '.ini');
-  if not FileExists2(FileName) then
+  if (not FileExists2(FileName)) and (not FileExists2(ExtractFilePath(ParamStr(0)) + 'MeryPortable.ini')) then
   begin
     FileName := GetAppDataPath + SName + '\' + ChangeFileExt(ExtractFileName(ParamStr(0)), '.ini');
     ForceDirectories(ExtractFileDir(FileName));

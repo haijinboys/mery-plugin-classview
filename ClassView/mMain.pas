@@ -503,7 +503,7 @@ end;
 procedure TMainForm.UpdateTreeView;
 begin
   with TreeView do
-    if PixelsPerInch >= 240 then
+    if PixelsPerInch >= 288 then
       Images := ExtraLargeImageList
     else if PixelsPerInch >= 192 then
       Images := LargeImageList
